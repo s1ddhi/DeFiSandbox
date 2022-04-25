@@ -22,7 +22,7 @@ contract CurveExchange {
     address constant private STABLESWAP_ADDRESS = 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7;
     StableSwap constant private stableSwap = StableSwap(STABLESWAP_ADDRESS);
 
-    function swap(int128 fromTokenIndex, int128 toTokenIndex) public {
+    function swapAll(int128 fromTokenIndex, int128 toTokenIndex) public {
         IERC20 fromToken = token[uint128(fromTokenIndex)];
         uint256 balFrom = fromToken.balanceOf(address(this));
         uint256 minAmount = 1;

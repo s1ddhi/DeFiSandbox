@@ -38,7 +38,7 @@ contract("TestExchange", (accounts) => {
     })
 
     it("exchange", async() => {
-        await EXCHANGE_CONTRACT.swap(USDC_INDEX, USDT_INDEX);
+        await EXCHANGE_CONTRACT.swapAll(USDC_INDEX, USDT_INDEX);
         console.log("FINAL")
         await displayAll(accounts)
     })
