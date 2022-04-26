@@ -10,6 +10,7 @@ interface StableSwapLending {
 
 interface LiquidityGauge {
     function deposit(uint256 _value, address addr) external;
+    function withdraw(uint256 _value) external;
 }
 
 contract CurveLending {
@@ -58,6 +59,26 @@ contract CurveLending {
     function withdrawAll() public {
         uint256 bal = getLPBalance();
         uint256[3] memory minAmount = [uint256(0), 0, 0];
-        return STABLESWAP.remove_liquidity(bal, minAmount);
+        STABLESWAP.remove_liquidity(bal, minAmount);
+    }
+
+    address constant private CURVEGAUGE_ADDRESS = 0xbFcF63294aD7105dEa65aA58F8AE5BE2D9d0952A;
+    LiquidityGauge constant private CURVEGAUGE = LiquidityGauge(CURVEGAUGE_ADDRESS);
+    IERC20 constant private CURVEGAUGE_TOKEN = IERC20(CURVEGAUGE_ADDRESS);
+
+    function stakeAllLP() public {
+        // Require that address has LP tokens
+        uint256 lpBal = getLPBalance();
+        CURVELP.safeApprove(CURVEGAUGE_ADDRESS, lpBal);
+        CURVEGAUGE.deposit(lpBal, address(this));
+    }
+
+    function getStakeBalance() public view returns(uint256) {
+        return CURVEGAUGE_TOKEN.balanceOf(address(this));
+    }
+
+    function redeemAllStakedLP() public {
+        uint256 stakeBal = getStakeBalance();
+        CURVEGAUGE.withdraw(stakeBal);
     }
 }

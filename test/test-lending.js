@@ -64,18 +64,60 @@ contract("TestCurveLendingWithdrawal", (accounts) => {
     })
 })
 
+contract("TestCurveStaking", (accounts) => {
+    beforeEach(async () => {
+        USDC_CONTRACT = await IERC20.at(USDC)
+        LENDING_CONTRACT = await LENDING.new()
+
+        amount = 1
+
+        await web3.eth.sendTransaction({
+            from: accounts[0],
+            to: USDC_WHALE,
+            value: web3.utils.toWei(amount.toString(), "ether")
+        });
+
+        const usdcAmount = 1000000000;
+        await USDC_CONTRACT.transfer(LENDING_CONTRACT.address, usdcAmount, {
+            from: USDC_WHALE,
+          })
+
+        await LENDING_CONTRACT.lendAll()
+        console.log("SETUP")
+        await displayAll(accounts[0])
+    })
+
+    it("stakes all liquidity", async () => {
+        await LENDING_CONTRACT.stakeAllLP();
+        console.log("POST STAKE");
+        await displayAll(accounts[0]);
+    })
+
+    it("can redeem all staked liquidity", async () => {
+        await LENDING_CONTRACT.stakeAllLP();
+        console.log("POST STAKE");
+        await displayAll(accounts[0]);
+
+        await LENDING_CONTRACT.redeemAllStakedLP();
+        console.log("POST REDEMPTION");
+        await displayAll(accounts[0]);
+    })
+})
+
 displayAll = async (account) => {
     const whaleBalUSDC = await USDC_CONTRACT.balanceOf(USDC_WHALE);
     const accountBalUSDC = await USDC_CONTRACT.balanceOf(account);
     const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-    const lpBalance = await LENDING_CONTRACT.getLPBalance()
+    const lpBalance = await LENDING_CONTRACT.getLPBalance();
+    const stakeBalance = await LENDING_CONTRACT.getStakeBalance();
 
     console.log("==========\n")
 
     console.log("WHALE USDC bal:", whaleBalUSDC.toString());
     console.log("CONTRACT USDC bal:", contractBalUSDC.toString())
     console.log("ACCOUNT USDC bal:", accountBalUSDC.toString());
-    console.log("LP Balance:", lpBalance.toString())
+    console.log("LP Balance:", lpBalance.toString());
+    console.log("Stake Balance:", stakeBalance.toString());
 
     console.log("\n==========\n")
 }
