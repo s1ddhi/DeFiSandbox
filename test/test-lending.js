@@ -12,14 +12,17 @@ contract("TestCurveLending", (accounts) => {
 
         await setup(accounts[0], USDC_CONTRACT, LENDING_CONTRACT, USDC_WHALE);
 
-        console.log("SETUP");
-        await displayAll(accounts[0]);
+        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(contractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
+        const lpBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.equal(lpBalance, 0, "[Setup fault] There is already LP tokens where there should not.");
     })
 
     it("adds all liquidity", async () => {
         await LENDING_CONTRACT.lendAll();
-        console.log("POST LENDING");
-        await displayAll(accounts[0]);
+
+        const lpBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(lpBalance, 0, "There is no LP tokens where there should be as USDC is all lent.");
     })
 });
 
@@ -31,14 +34,20 @@ contract("TestCurveLendingWithdrawal", (accounts) => {
         await setup(accounts[0], USDC_CONTRACT, LENDING_CONTRACT, USDC_WHALE);
 
         await LENDING_CONTRACT.lendAll();
-        console.log("SETUP");
-        await displayAll(accounts[0]);
+
+        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.equal(contractBalUSDC, 0, "[Setup fault] There should not be USDC in contract where there is.");
+        const lpBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(lpBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
     })
 
     it("withdraws all liquidity", async () => {
         await LENDING_CONTRACT.withdrawAll();
-        console.log("POST WITHDRWAL");
-        await displayAll(accounts[0]);
+
+        lpBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.equal(lpBalance, 0, "There should not be any staked LP tokens where there is as all should be converted to USDC");
+        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
     })
 });
 
@@ -50,28 +59,37 @@ contract("TestCurveStaking", (accounts) => {
         await setup(accounts[0], USDC_CONTRACT, LENDING_CONTRACT, USDC_WHALE);
 
         await LENDING_CONTRACT.lendAll();
-        console.log("SETUP");
-        await displayAll(accounts[0]);
+        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.equal(contractBalUSDC, 0, "[Setup fault] There should not be USDC in contract where there is.");
+        const lpBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(lpBalance, 0, "[Setup fault] There is no LP balance where there should be.");
+        const stakeBalance = await LENDING_CONTRACT.getStakeBalance();
+        assert.equal(stakeBalance, 0, "[Setup fault] There should not be any staked LP tokens where there is.");
     })
 
     it("stakes all liquidity", async () => {
         await LENDING_CONTRACT.stakeAllLP();
-        console.log("POST STAKE");
-        await displayAll(accounts[0]);
+
+        const stakeBalance = await LENDING_CONTRACT.getStakeBalance();
+        assert.notEqual(stakeBalance, 0, "There is no staked LP tokens where there should be from staking all LP tokens.");
     })
 
-    it("can redeem all staked liquidity", async () => {
+    it("redeems all staked liquidity", async () => {
         await LENDING_CONTRACT.stakeAllLP();
-        console.log("POST STAKE");
-        await displayAll(accounts[0]);
+
+        stakeBalance = await LENDING_CONTRACT.getStakeBalance();
+        assert.notEqual(stakeBalance, 0, "[Setup fault] There is no staked LP tokens where there should be.");
 
         await LENDING_CONTRACT.redeemAllStakedLP();
-        console.log("POST REDEMPTION");
-        await displayAll(accounts[0]);
+
+        stakeBalance = await LENDING_CONTRACT.getStakeBalance();
+        assert.equal(stakeBalance, 0, "There should not be any staked LP tokens where there is as all should be unstaked.");
+        const lpBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(lpBalance, 0, "There is no LP tokens where there should be as all LP tokens should be unstaked.");
     })
 });
 
-const displayAll = async (account) => {
+const debugDisplayAll = async (account) => {
     const whaleBalUSDC = await USDC_CONTRACT.balanceOf(USDC_WHALE);
     const accountBalUSDC = await USDC_CONTRACT.balanceOf(account);
     const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
