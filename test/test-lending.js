@@ -10,9 +10,6 @@ contract("TestCurveLending", (accounts) => {
         USDC_CONTRACT = await IERC20.at(USDC)
         LENDING_CONTRACT = await LENDING.new()
 
-        console.log("ORIGINAL")
-        await displayAll(accounts[0]);
-
         amount = 1
 
         await web3.eth.sendTransaction({
@@ -30,10 +27,40 @@ contract("TestCurveLending", (accounts) => {
         await displayAll(accounts[0]);
     })
 
-    it("adds liquidity", async () => {
+    it("adds all liquidity", async () => {
         await LENDING_CONTRACT.lendAll()
         console.log("POST LENDING")
         await displayAll(accounts[0])
+    })
+})
+
+contract("TestCurveLendingWithdrawal", (accounts) => {
+    beforeEach(async () => {
+        USDC_CONTRACT = await IERC20.at(USDC)
+        LENDING_CONTRACT = await LENDING.new()
+
+        amount = 1
+
+        await web3.eth.sendTransaction({
+            from: accounts[0],
+            to: USDC_WHALE,
+            value: web3.utils.toWei(amount.toString(), "ether")
+        });
+
+        const usdcAmount = 1000000000;
+        await USDC_CONTRACT.transfer(LENDING_CONTRACT.address, usdcAmount, {
+            from: USDC_WHALE,
+          })
+
+        await LENDING_CONTRACT.lendAll()
+        console.log("SETUP")
+        await displayAll(accounts[0])
+    })
+
+    it("withdraws all liquidity", async () => {
+        await LENDING_CONTRACT.withdrawAll();
+        console.log("POST WITHDRWAL");
+        await displayAll(accounts[0]);
     })
 })
 
@@ -50,5 +77,5 @@ displayAll = async (account) => {
     console.log("ACCOUNT USDC bal:", accountBalUSDC.toString());
     console.log("LP Balance:", lpBalance.toString())
 
-    console.log("\n==========")
+    console.log("\n==========\n")
 }

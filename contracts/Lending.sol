@@ -5,10 +5,11 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 interface StableSwapLending {
    function add_liquidity(uint256[3] calldata amounts, uint256 min_mint_amount) external;
+   function remove_liquidity(uint256 _amount, uint256[3] calldata min_amounts) external;
 }
 
-interface CurveToken {
-    function balanceOf(address account) external view returns(uint256);
+interface LiquidityGauge {
+    function deposit(uint256 _value, address addr) external;
 }
 
 contract CurveLending {
@@ -47,9 +48,16 @@ contract CurveLending {
     }
 
     address constant private CURVELP_ADDRESS = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
-    CurveToken constant private CURVELP = CurveToken(CURVELP_ADDRESS);
+    // Could be a specific Interface 'CurveToken' but the smart contract implements ERC20
+    IERC20 constant private CURVELP = IERC20(CURVELP_ADDRESS);
 
     function getLPBalance() view public returns(uint256) {
         return CURVELP.balanceOf(address(this));
+    }
+
+    function withdrawAll() public {
+        uint256 bal = getLPBalance();
+        uint256[3] memory minAmount = [uint256(0), 0, 0];
+        return STABLESWAP.remove_liquidity(bal, minAmount);
     }
 }
