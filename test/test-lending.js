@@ -81,6 +81,7 @@ contract("TestCurveLendingWithdrawal", (accounts) => {
     })
 });
 
+// TODO Complete implementation of locking of CRV and conversion of 3CRV LP to CRV
 contract("TestCurveStaking", (accounts) => {
     beforeEach(async () => {
         USDC_CONTRACT = await IERC20.at(USDC);
@@ -98,14 +99,24 @@ contract("TestCurveStaking", (accounts) => {
         assert.equal(stakeBalance, 0, "[Setup fault] There should not be any staked LP tokens where there is.");
     })
 
-    it("stakes all liquidity", async () => {
+    it("stakes all liquidity without lock-in", async () => {
+        // curveDAO = await LENDING_CONTRACT.getCurveDAOBalance();
+        // votingPower = await LENDING_CONTRACT.votingPower();
+        // console.log("CRV", curveDAO.toString());
+        // console.log("vote", curveDAO.toString());
+
         await LENDING_CONTRACT.stakeAllLP();
 
         const stakeBalance = await LENDING_CONTRACT.getStakeBalance();
+
+        // curveDAO = await LENDING_CONTRACT.getCurveDAOBalance();
+        // votingPower = await LENDING_CONTRACT.votingPower();
+        // console.log("CRV", curveDAO.toString());
+        // console.log("vote", curveDAO.toString());
         assert.notEqual(stakeBalance, 0, "There is no staked LP tokens where there should be from staking all LP tokens.");
     })
 
-    it("redeems all staked liquidity", async () => {
+    it("redeems all staked liquidity that is not locked-in", async () => {
         await LENDING_CONTRACT.stakeAllLP();
 
         stakeBalance = await LENDING_CONTRACT.getStakeBalance();

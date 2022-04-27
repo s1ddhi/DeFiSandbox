@@ -11,11 +11,21 @@ interface StableSwapLending {
 interface LiquidityGauge {
     function deposit(uint256 _value, address addr) external;
     function withdraw(uint256 _value) external;
+    function claimable_tokens(address addr) external returns(uint256);
 }
 
-interface CRV3Token {
+interface CRV3LPToken {
     function balanceOf(address addr) external view returns(uint256);
     function approve(address _spender, uint256 _value) external returns(bool);
+}
+
+interface CRVMINTER {
+    function mint(address gauge_addr) external;
+}
+
+interface VOTINGESCROW {
+    function create_lock(uint256 _value, uint256 _unlock_time) external;
+    function balanceOf(address addr, uint256 _t) external returns(uint256);
 }
 
 contract CurveLending {
@@ -65,12 +75,11 @@ contract CurveLending {
         }
     }
 
-    address constant private CURVELP_ADDRESS = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
-    // Could be a specific Interface 'CurveToken' but the smart contract implements ERC20
-    CRV3Token constant private CURVELP = CRV3Token(CURVELP_ADDRESS);
+    address constant private CRV3LP_ADDRESS = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
+    CRV3LPToken constant private CRV3LP_TOKEN = CRV3LPToken(CRV3LP_ADDRESS);
 
     function getLPBalance() public view returns(uint256) {
-        return CURVELP.balanceOf(address(this));
+        return CRV3LP_TOKEN.balanceOf(address(this));
     }
 
     function withdrawAll() public {
@@ -86,12 +95,13 @@ contract CurveLending {
 
     address constant private CURVEGAUGE_ADDRESS = 0xbFcF63294aD7105dEa65aA58F8AE5BE2D9d0952A;
     LiquidityGauge constant private CURVEGAUGE = LiquidityGauge(CURVEGAUGE_ADDRESS);
+    // TODO This may not be a valid way to check for CRV token balance
     IERC20 constant private CURVEGAUGE_TOKEN = IERC20(CURVEGAUGE_ADDRESS);
 
     function stakeAllLP() public {
         // Require that address has LP tokens
         uint256 lpBal = getLPBalance();
-        CURVELP.approve(CURVEGAUGE_ADDRESS, lpBal);
+        CRV3LP_TOKEN.approve(CURVEGAUGE_ADDRESS, lpBal);
         CURVEGAUGE.deposit(lpBal, address(this));
     }
 
@@ -99,8 +109,36 @@ contract CurveLending {
         return CURVEGAUGE_TOKEN.balanceOf(address(this));
     }
 
+    // TODO Remove from locked, convert CRV to 3CRV LP (if necessary), then can withdraw all
     function redeemAllStakedLP() public {
         uint256 stakeBal = getStakeBalance();
         CURVEGAUGE.withdraw(stakeBal);
+    }
+
+    function getClaimableBalance() public returns(uint256) {
+        uint256 bal = CURVEGAUGE.claimable_tokens(address(this));
+        return bal;
+    }
+
+    address constant private CURVEDAO_ADDRESS = 0xD533a949740bb3306d119CC777fa900bA034cd52;
+    IERC20 constant private CURVEDAO_TOKEN = IERC20(CURVEDAO_ADDRESS);
+
+    function getCurveDAOBalance() public view returns(uint256) {
+        return CURVEDAO_TOKEN.balanceOf(address(this));
+    }
+
+    address constant private VOTINGESCROW_ADDRESS = 0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2;
+    VOTINGESCROW constant private ESCROW = VOTINGESCROW(VOTINGESCROW_ADDRESS);
+
+    // TODO Called after `depositAllLP()`, but need to get smart contract address whitelisted before can call `create_lock` below
+    // https://github.com/curvefi/curve-dao-contracts/blob/3156684fd7ca424ec4c56b2c8d898b77afa78496/contracts/VotingEscrow.vy#L418
+    function lockInStakedLP() public {
+        uint256 bal = getStakeBalance();
+        uint256 unlockTime = 31536000; // 365 days in seconds
+        ESCROW.create_lock(bal, unlockTime);
+    }
+
+    function votingPower() public returns(uint256) {
+        return ESCROW.balanceOf(address(this), block.timestamp);
     }
 }
