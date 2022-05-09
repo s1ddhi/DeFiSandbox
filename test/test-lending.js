@@ -1,33 +1,33 @@
 const IERC20 = artifacts.require("IERC20");
 const LENDING = artifacts.require("CurveLending");
 
-const USDT_WHALE = "0x5754284f345afc66a98fbb0a0afe71e0f007b949";
-const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
-const USDT_INDEX = 2;
-const USDT_DECIMAL = 6;
+const DAI_WHALE = "0x28c6c06298d514db089934071355e5743bf21d60";
+const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+const DAI_INDEX = 0;
+const DAI_DECIMAL = 18;
 
 const USDC_WHALE = "0xcffad3200574698b78f32232aa9d63eabd290703";
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const USDC_INDEX = 1;
 const USDC_DECIMAL = 6;
 
-const DAI_WHALE = "0x28c6c06298d514db089934071355e5743bf21d60";
-const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
-const DAI_INDEX = 0;
-const DAI_DECIMAL = 18;
+const USDT_WHALE = "0x5754284f345afc66a98fbb0a0afe71e0f007b949";
+const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const USDT_INDEX = 2;
+const USDT_DECIMAL = 6;
 
 const ERC20_DECIMAL = 18;
 
 const DECIMALS = [DAI_DECIMAL, USDC_DECIMAL, USDT_DECIMAL];
 
-contract("TestCurveLending", (accounts) => {
+contract("TestCurveLendingMultiAsset", (accounts) => {
     beforeEach(async () => {
         USDT_CONTRACT = await IERC20.at(USDT);
         USDC_CONTRACT = await IERC20.at(USDC);
         DAI_CONTRACT = await IERC20.at(DAI);
         LENDING_CONTRACT = await LENDING.new();
 
-        await setup(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, USDC_CONTRACT, USDC_WHALE, USDC_CONTRACT, USDC_WHALE);
+        await setupAll(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, USDC_CONTRACT, USDC_WHALE, USDC_CONTRACT, USDC_WHALE, USDT_CONTRACT, USDT_WHALE);
 
         const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.notEqual(contractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
@@ -55,14 +55,14 @@ contract("TestCurveLending", (accounts) => {
     })
 });
 
-contract("TestCurveLendingWithdrawal", (accounts) => {
+contract("TestCurveLendingWithdrawalMultiAsset", (accounts) => {
     beforeEach(async () => {
         USDT_CONTRACT = await IERC20.at(USDT);
         USDC_CONTRACT = await IERC20.at(USDC);
         DAI_CONTRACT = await IERC20.at(DAI);
         LENDING_CONTRACT = await LENDING.new();
 
-        await setup(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, USDC_CONTRACT, USDC_WHALE, USDC_CONTRACT, USDC_WHALE);
+        await setupAll(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, USDC_CONTRACT, USDC_WHALE, USDC_CONTRACT, USDC_WHALE, USDT_CONTRACT, USDT_WHALE);
 
         await LENDING_CONTRACT.lendAll();
 
@@ -86,7 +86,6 @@ contract("TestCurveLendingWithdrawal", (accounts) => {
         const lpToWithdraw = initialLPBalance.div(web3.utils.toBN(2));
 
         await LENDING_CONTRACT.withdraw(lpToWithdraw);
-        await debugDisplayAll(accounts[0]);
         const finalLPBalance = web3.utils.toBN(await LENDING_CONTRACT.getLPBalance());
 
         assert.ok(finalLPBalance.eq(initialLPBalance.sub(lpToWithdraw)), "There should remain " + initialLPBalance.sub(lpToWithdraw).toString() + " LP tokens.");
@@ -94,7 +93,6 @@ contract("TestCurveLendingWithdrawal", (accounts) => {
         assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
     })
 });
-
 
 const debugDisplayAll = async (account) => {
     const whaleBalDAI = rationalise(await DAI_CONTRACT.balanceOf(DAI_WHALE), DAI_DECIMAL);
@@ -116,18 +114,27 @@ const debugDisplayAll = async (account) => {
     console.log("WHALE DAI bal:", whaleBalDAI.toString());
     console.log("CONTRACT DAI bal:", contractBalDAI.toString());
     console.log("ACCOUNT DAI bal:", accountBalDAI.toString());
+
+    console.log("\n");
+
     console.log("WHALE USDC bal:", whaleBalUSDC.toString());
     console.log("CONTRACT USDC bal:", contractBalUSDC.toString());
     console.log("ACCOUNT USDC bal:", accountBalUSDC.toString());
+
+    console.log("\n");
+
     console.log("WHALE USDT bal:", whaleBalUSDT.toString());
     console.log("CONTRACT USDT bal:", contractBalUSDT.toString());
     console.log("ACCOUNT USDT bal:", accountBalUSDT.toString());
+
+    console.log("\n");
+
     console.log("LP bal:", lpBal.toString());
 
     console.log("\n==========\n");
 };
 
-const setup = async (account, LENDING_CONTRACT, ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3) => {
+const setupAll = async (account, LENDING_CONTRACT, ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3) => {
     const amount = 1;
     await sendETH(account, ERC20_WHALE_ADDRESS_1, amount);
 
@@ -136,6 +143,14 @@ const setup = async (account, LENDING_CONTRACT, ERC20_CONTRACT_1, ERC20_WHALE_AD
     await sendERC20(ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, LENDING_CONTRACT.address, erc20Amount);
     await sendERC20(ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3, LENDING_CONTRACT.address, erc20Amount);
 };
+
+const setupSingle = async (account, LENDING_CONTRACT, ERC20_CONTRACT, ERC20_WHALE_ADDRESS) => {
+    const amount = 1;
+    await sendETH(account, ERC20_WHALE_ADDRESS, amount);
+
+    const erc20Amount = 1000000000;
+    await sendERC20(ERC20_CONTRACT, ERC20_WHALE_ADDRESS, LENDING_CONTRACT.address, erc20Amount);
+}
 
 const sendERC20 = async (ERC20_CONTRACT, from, to, amount) => {
     await ERC20_CONTRACT.transfer(to, amount, {
