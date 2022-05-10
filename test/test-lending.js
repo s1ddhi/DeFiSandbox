@@ -27,14 +27,14 @@ contract("TestCurveLendingSingleAsset", (accounts) => {
 
         await setupSingle(accounts[0], LENDING_CONTRACT, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
-        const contractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(contractBalDAI, 0, "[Setup fault] There is DAI in contract where there should not.");
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(contractBalUSDC, 0, "[Setup fault] There is USDC in contract where there should not.");
-        const contractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalUSDT, 0, "[Setup fault] There is no USDC in contract where there should be.");
-        const lpBalance = await LENDING_CONTRACT.getLPBalance();
-        assert.equal(lpBalance, 0, "[Setup fault] There is already LP tokens where there should not.");
+        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.equal(actualContractBalDAI, 0, "[Setup fault] There is DAI in contract where there should not.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.equal(actualContractBalUSDC, 0, "[Setup fault] There is USDC in contract where there should not.");
+        const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDT, 0, "[Setup fault] There is no USDC in contract where there should be.");
+        const actualContractLPBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.equal(actualContractLPBalance, 0, "[Setup fault] There is already LP tokens where there should not.");
     })
 
     it("adds partial liquidity of USDT", async () => {
@@ -43,8 +43,8 @@ contract("TestCurveLendingSingleAsset", (accounts) => {
         const usdtToLend = 100;
         await LENDING_CONTRACT.lend(0, 0, unnormalise(usdtToLend, USDT_DECIMAL));
 
-        const lpBalance = await LENDING_CONTRACT.getLPBalance();
-        assert.notEqual(lpBalance, 0, "There is no LP tokens where there should be as USDT is all lent.");
+        const actualContractLPBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDT is all lent.");
         const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
         const expectedContractBalUSDT = initialContractBalUSDT.sub(web3.utils.toBN(usdtToLend));
         assert.equal(actualContractBalUSDT.toString(), expectedContractBalUSDT.toString(), "Only " + usdtToLend.toString() + " should have been lent.")
@@ -60,17 +60,17 @@ contract("TestCurveLendingMultiAsset", (accounts) => {
 
         await setupAll(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
-        const lpBalance = await LENDING_CONTRACT.getLPBalance();
-        assert.equal(lpBalance, 0, "[Setup fault] There is already LP tokens where there should not.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
+        const actualContractLPBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.equal(actualContractLPBalance, 0, "[Setup fault] There is already LP tokens where there should not.");
     })
 
     it("adds all asset liquidity", async () => {
         await LENDING_CONTRACT.lendAll();
 
-        const lpBalance = await LENDING_CONTRACT.getLPBalance();
-        assert.notEqual(lpBalance, 0, "There is no LP tokens where there should be as USDC is all lent.");
+        const actualContractLPBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDC is all lent.");
     })
 
     it("adds only partial USDT liquidity", async () => {
@@ -79,12 +79,12 @@ contract("TestCurveLendingMultiAsset", (accounts) => {
         const usdtToLend = 100;
         await LENDING_CONTRACT.lend(0, 0, unnormalise(usdtToLend, USDT_DECIMAL));
 
-        const lpBalance = await LENDING_CONTRACT.getLPBalance();
-        assert.notEqual(lpBalance, 0, "There is no LP tokens where there should be as USDT is all lent.");
-        const contractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalDAI, 0, "There should be DAI as none should not be lent.");
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalUSDC, 0, "There should be USDC as none should not be lent.");
+        const actualContractLPBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDT is all lent.");
+        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalDAI, 0, "There should be DAI as none should not be lent.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDC, 0, "There should be USDC as none should not be lent.");
 
         const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
         const expectedContractBalUSDT = initialContractBalUSDT.sub(web3.utils.toBN(usdtToLend));
@@ -92,7 +92,7 @@ contract("TestCurveLendingMultiAsset", (accounts) => {
     })
 });
 
-contract("TestCurveLendingWithdrawalMultiAsset", (accounts) => {
+contract("TestCurveLendingWithdrawalSingleAsset", (accounts) => {
     beforeEach(async () => {
         USDT_CONTRACT = await IERC20.at(USDT);
         USDC_CONTRACT = await IERC20.at(USDC);
@@ -105,33 +105,8 @@ contract("TestCurveLendingWithdrawalMultiAsset", (accounts) => {
 
         const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.equal(contractBalUSDC, 0, "[Setup fault] There should not be USDC in contract where there is.");
-        const lpBalance = await LENDING_CONTRACT.getLPBalance();
-        assert.notEqual(lpBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
-    })
-
-    it("withdraws all liquidity of all assets", async () => {
-        await LENDING_CONTRACT.withdrawAllLP(-1);
-
-        lpBalance = await LENDING_CONTRACT.getLPBalance();
-        assert.equal(lpBalance, 0, "There should not be LP tokens where there is as all should be converted to USDC.");
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
-    })
-
-    it("withdraws partial liquidity of all assets", async () => {
-        const initialLPBalance = web3.utils.toBN(await LENDING_CONTRACT.getLPBalance());
-        const lpToWithdraw = initialLPBalance.div(web3.utils.toBN(2));
-
-        await LENDING_CONTRACT.withdrawLP(-1, lpToWithdraw);
-        const finalLPBalance = web3.utils.toBN(await LENDING_CONTRACT.getLPBalance());
-
-        assert.ok(finalLPBalance.eq(initialLPBalance.sub(lpToWithdraw)), "There should remain " + initialLPBalance.sub(lpToWithdraw).toString() + " LP tokens.");
-        const contractBalDAI = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalDAI, 0, "There should be DAI from withdrawing assets associated with LP tokens.");
-        const contractBalUSDT = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalUSDT, 0, "There should be USDT from withdrawing assets associated with LP tokens.");
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+        const actualContractLPBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(actualContractLPBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
     })
 
     it("withdraws only USDC liquidity", async () => {
@@ -160,6 +135,51 @@ contract("TestCurveLendingWithdrawalMultiAsset", (accounts) => {
         assert.equal(contractBalUSDT, 0, "There should be no USDT from withdrawing assets associated with LP tokens.");
         const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+    })
+})
+
+contract("TestCurveLendingWithdrawalMultiAsset", (accounts) => {
+    beforeEach(async () => {
+        USDT_CONTRACT = await IERC20.at(USDT);
+        USDC_CONTRACT = await IERC20.at(USDC);
+        DAI_CONTRACT = await IERC20.at(DAI);
+        LENDING_CONTRACT = await LENDING.new();
+
+        await setupAll(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+        await LENDING_CONTRACT.lendAll();
+
+        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.equal(contractBalUSDC, 0, "[Setup fault] There should not be USDC in contract where there is.");
+        const actualContractLPBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.notEqual(actualContractLPBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
+    })
+
+    it("withdraws all liquidity of all assets", async () => {
+        await LENDING_CONTRACT.withdrawAllLP(-1);
+
+        lpBalance = await LENDING_CONTRACT.getLPBalance();
+        assert.equal(lpBalance, 0, "There should not be LP tokens where there is as all should be converted to USDC.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+    })
+
+    it("withdraws partial liquidity of all assets", async () => {
+        const initialLPBalance = normalise(web3.utils.toBN(await LENDING_CONTRACT.getLPBalance()), ERC20_DECIMAL);
+        const lpToWithdraw = initialLPBalance.div(web3.utils.toBN(2));
+
+        await LENDING_CONTRACT.withdrawLP(-1, unnormalise(lpToWithdraw, ERC20_DECIMAL));
+
+        const actualContractLPBalance = normalise(web3.utils.toBN(await LENDING_CONTRACT.getLPBalance()), ERC20_DECIMAL);
+        const expectedContractLPBalance = initialLPBalance.sub(lpToWithdraw);
+        assert.equal(actualContractLPBalance.toString(), expectedContractLPBalance.toString(), "There should remain " + initialLPBalance.sub(lpToWithdraw).toString() + " LP tokens.");
+
+        const actualContractBalDAI = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalDAI, 0, "There should be DAI from withdrawing assets associated with LP tokens.");
+        const actualContractBalUSDT = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDT, 0, "There should be USDT from withdrawing assets associated with LP tokens.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
     })
 });
 
