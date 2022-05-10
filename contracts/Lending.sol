@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 interface StableSwapLending {
    function add_liquidity(uint256[3] calldata amounts, uint256 min_mint_amount) external;
    function remove_liquidity(uint256 _amount, uint256[3] calldata min_amounts) external;
+   function remove_liquidity_one_coin(uint256 _token_amount, int128 i, uint256 min_amount) external;
 }
 
 interface LiquidityGauge {
@@ -54,9 +55,8 @@ contract CurveLending {
         STABLESWAP.add_liquidity(balance, min_mint_amount);
     }
 
-    function lend(uint256 usdcAmount) public {
-        uint256[3] memory balance = getBalance();
-        balance[USDC_INDEX] = usdcAmount;
+    function lend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public {
+        uint256[3] memory balance = [daiAmount, usdcAmount, usdtAmount];
         approveLend(balance);
         uint256 min_mint_amount = 1;
         STABLESWAP.add_liquidity(balance, min_mint_amount);
@@ -82,14 +82,24 @@ contract CurveLending {
         return CRV3LP_TOKEN.balanceOf(address(this));
     }
 
-    function withdrawAll() public {
+    function withdrawAllLP(int128 coinIndex) public {
         uint256 bal = getLPBalance();
-        uint256[3] memory minAmount = [uint256(0), 0, 0];
-        STABLESWAP.remove_liquidity(bal, minAmount);
+        if (coinIndex == -1) {
+            uint256[3] memory minAmount = [uint256(0), 0, 0];
+            STABLESWAP.remove_liquidity(bal, minAmount);
+        } else {
+            uint256 minAmount = 0;
+            STABLESWAP.remove_liquidity_one_coin(bal, coinIndex, minAmount);
+        }
     }
 
-    function withdraw(uint256 lpAmount) public {
-        uint256[3] memory minAmount = [uint256(0), 0, 0];
-        STABLESWAP.remove_liquidity(lpAmount, minAmount);
+    function withdrawLP(int128 coinIndex, uint256 lpAmount) public {
+        if (coinIndex == -1) {
+            uint256[3] memory minAmount = [uint256(0), 0, 0];
+            STABLESWAP.remove_liquidity(lpAmount, minAmount);
+        } else {
+            uint256 minAmount = 0;
+            STABLESWAP.remove_liquidity_one_coin(lpAmount, coinIndex, minAmount);
+        }
     }
 }
