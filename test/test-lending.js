@@ -214,7 +214,22 @@ contract("TestConvexStakingDeposit", (accounts) => {
 
         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP tokens as all should have been staked.");
+        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+        assert.equal(actualStakedConvexLPBalance.toString(), crvLPBal.toString(), "All 3CRV LP should be staked.");
     });
+
+    it("lends partial 3CRV LP tokens and stakes all", async () => {
+        const intialCRVLPBal = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
+        const toStakeCRVLPBal = web3.utils.toBN(intialCRVLPBal.div(web3.utils.toBN(2)));
+        await LENDING_CONTRACT.convexDeposit(toStakeCRVLPBal, true);
+
+        const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+        assert.notEqual(actualContractLPBalance, intialCRVLPBal.sub(toStakeCRVLPBal), "[Setup fault] There is no LP tokens where there should be.");
+        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP tokens as all should have been staked.");
+        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+        assert.equal(actualStakedConvexLPBalance.toString(), toStakeCRVLPBal.toString(), normalise(toStakeCRVLPBal, ERC20_DECIMAL).toString() + " of 3CRV LP should be staked but actual is " + normalise(actualStakedConvexLPBalance, ERC20_DECIMAL).toString() + ".");
+    })
 });
 
 contract("TestConvexStakingWithdraw", (accounts) => {
