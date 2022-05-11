@@ -37,6 +37,8 @@ interface IConvexRewards {
     function stake(uint256 _amount) external returns(bool);
     //stake a convex tokenized deposit for another address(transfering ownership)
     function stakeFor(address _account,uint256 _amount) external returns(bool);
+    //get earned awards of an address
+    function earned(address account) external view returns (uint256);
 }
 
 contract CurveLending {
@@ -136,7 +138,36 @@ contract CurveLending {
         return CONVEX_3POOL_REWARDS.balanceOf(address(this));
     }
 
-    function convexWithdrawStaked(uint256 amount) public {
+    function getClaimableRewards() public view returns(uint256) {
+        return CONVEX_3POOL_REWARDS.earned(address(this));
+    }
+
+    address constant private CRV_TOKEN_ADDRESS = 0xD533a949740bb3306d119CC777fa900bA034cd52;
+    IERC20 constant private CRV_TOKEN = IERC20(CRV_TOKEN_ADDRESS);
+
+    function getCRVBalance() public view returns(uint256) {
+        return CRV_TOKEN.balanceOf(address(this));
+    }
+
+    address constant private CVX_TOKEN_ADDRESS = 0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B;
+    IERC20 constant private CVX_TOKEN = IERC20(CVX_TOKEN_ADDRESS);
+
+    function getCVXBalance() public view returns(uint256) {
+        return CVX_TOKEN.balanceOf(address(this));
+    }
+
+    function claimRewards() public {
+        CONVEX_3POOL_REWARDS.getReward();
+    }
+
+    // TODO check when no rewards to claim (if need to normalise rewards w.r.t. ERC20 decimal)
+    modifier hasClaimableRewards {
+        uint256 rewards = getClaimableRewards();
+        require(rewards != 0);
+        _;
+    }
+
+    function convexWithdrawStaked(uint256 amount) public hasClaimableRewards {
         // TODO Withdraw with claim - fix issue!
         CONVEX_3POOL_REWARDS.withdrawAndUnwrap(amount, false);
     }

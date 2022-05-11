@@ -1,3 +1,5 @@
+const timeMachine = require('ganache-time-traveler');
+
 const IERC20 = artifacts.require("IERC20");
 const LENDING = artifacts.require("CurveLending");
 
@@ -261,6 +263,22 @@ contract("TestConvexStakingWithdraw", (accounts) => {
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
         assert.equal(actualStakedConvexLPBalance, 0, "There should be no staked Convex LP balance as all should be 3CRV LP tokens.")
     })
+
+    it("claimEarnedRewards", async () => {
+        let currentRewardsBal = await LENDING_CONTRACT.getClaimableRewards();
+        assert.equal(currentRewardsBal, 0, "As no time has elapsed, there should be no rewards to claim.")
+
+        // advance 2 months
+        const MONTH_IN_SECONDS = 2628000;
+        await timeMachine.advanceTimeAndBlock(MONTH_IN_SECONDS * 2);
+
+        actualCurrentRewardsBal = await LENDING_CONTRACT.getClaimableRewards();
+        assert.notEqual(actualCurrentRewardsBal, 0, "There should be rewards that are claimable.");
+
+        await LENDING_CONTRACT.claimRewards();
+        const actualCRVbal = await LENDING_CONTRACT.getCRVBalance();
+        assert.equal(actualCurrentRewardsBal.toString(), actualCRVbal.toString(), "All CRV should have been claimed.")
+    })
 })
 
 const debugDisplayAll = async (account) => {
@@ -279,6 +297,10 @@ const debugDisplayAll = async (account) => {
     const curveLPBal = normalise(await LENDING_CONTRACT.get3CRVLPBalance(), ERC20_DECIMAL);
     const convexLPBal = normalise(await LENDING_CONTRACT.getConvexLPBalance(), ERC20_DECIMAL);
     const stakedConvexLPBal = normalise(await LENDING_CONTRACT.getStakedConvexLPBalance(), ERC20_DECIMAL);
+
+    const convexClaimableBal = normalise(await LENDING_CONTRACT.getClaimableRewards(), ERC20_DECIMAL);
+    const crvBal = normalise(await LENDING_CONTRACT.getCRVBalance(), ERC20_DECIMAL);
+    const cvxBal = normalise(await LENDING_CONTRACT.getCVXBalance(), ERC20_DECIMAL);
 
     console.log("==========\n");
 
@@ -304,6 +326,12 @@ const debugDisplayAll = async (account) => {
     console.log("Convex LP bal:", convexLPBal.toString());
     console.log("Staked Convex LP bal:", stakedConvexLPBal.toString());
 
+    console.log("\n");
+
+    console.log("CRV bal:", crvBal.toString());
+    console.log("CVX bal:", cvxBal.toString());
+    console.log("Convex claimable CRV bal:", convexClaimableBal.toString());
+
     console.log("\n==========\n");
 };
 
@@ -313,7 +341,7 @@ const setupAll = async (account, LENDING_CONTRACT, ERC20_CONTRACT_1, ERC20_WHALE
     await sendETH(account, ERC20_WHALE_ADDRESS_2, amount);
     await sendETH(account, ERC20_WHALE_ADDRESS_3, amount);
 
-    const erc20Amount = 1000;
+    const erc20Amount = 1000000;
     await sendERC20(ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, LENDING_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL_1));
     await sendERC20(ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, LENDING_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL_2));
     await sendERC20(ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3, LENDING_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL_3));
@@ -323,7 +351,7 @@ const setupSingle = async (account, LENDING_CONTRACT, ERC20_CONTRACT, ERC20_WHAL
     const amount = 1;
     await sendETH(account, ERC20_WHALE_ADDRESS, amount);
 
-    const erc20Amount = 1000;
+    const erc20Amount = 1000000;
     await sendERC20(ERC20_CONTRACT, ERC20_WHALE_ADDRESS, LENDING_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
 };
 
