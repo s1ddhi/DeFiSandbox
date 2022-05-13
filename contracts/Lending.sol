@@ -163,12 +163,12 @@ contract CurveLending {
     // TODO check when no rewards to claim (if need to normalise rewards w.r.t. ERC20 decimal)
     modifier hasClaimableRewards {
         uint256 rewards = getClaimableRewards();
-        require(rewards != 0);
+        require(rewards != 0, "There are no claimable rewards so we cannot call this function as it tries to claim and mint non-existent rewards");
         _;
     }
 
     function convexWithdrawStaked(uint256 amount) public hasClaimableRewards {
         // TODO Withdraw with claim - fix issue!
-        CONVEX_3POOL_REWARDS.withdrawAndUnwrap(amount, false);
+        CONVEX_3POOL_REWARDS.withdrawAndUnwrap(amount, true);
     }
 }
