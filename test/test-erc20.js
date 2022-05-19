@@ -1,4 +1,4 @@
-const IERC20 = artifacts.require("IERC20");
+const IERC20 = artifacts.require("OZIERC20");
 
 contract("IERC20", (accounts) => {
     const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";

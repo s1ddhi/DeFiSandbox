@@ -255,14 +255,14 @@ contract("TestConvexStakingWithdraw", (accounts) => {
 
         const snapshot = await timeMachine.takeSnapshot();
         snapshotId = snapshot['result'];
-        advanceTime(2);
+        await advanceTime(2);
 
         const currentRewardsBal = await LENDING_CONTRACT.getClaimableRewards();
-        assert.equal(currentRewardsBal, 0, "[Setup fault] Time has elapsed so there should be claimable rewards.")
+        assert.notEqual(currentRewardsBal, 0, "[Setup fault] Time has elapsed so there should be claimable rewards.")
     });
 
     afterEach(async () => {
-        timeMachine.revertToSnapshot(snapshotId);
+        await timeMachine.revertToSnapshot(snapshotId);
     });
 
     // TODO issue with withdrawing when there is claimable rewards from time passing
