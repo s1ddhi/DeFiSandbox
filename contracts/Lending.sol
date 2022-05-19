@@ -41,6 +41,10 @@ interface IConvexRewards {
     function earned(address account) external view returns (uint256);
 }
 
+interface ICurveGauge {
+    function claimable_tokens(address addr) external returns(uint256);
+}
+
 contract CurveLending {
     using SafeERC20 for IERC20;
 
@@ -167,8 +171,19 @@ contract CurveLending {
         _;
     }
 
-    function convexWithdrawStaked(uint256 amount) public hasClaimableRewards {
-        // TODO Withdraw with claim - fix issue!
-        CONVEX_3POOL_REWARDS.withdrawAndUnwrap(amount, true);
+    function convexUnstake(uint256 amount) public hasClaimableRewards {
+        CONVEX_3POOL_REWARDS.withdraw(amount, true);
+    }
+
+    function convexWithdraw(uint256 amount) public {
+        CONVEX_BOOSTER.withdraw(PID, amount);
+    }
+
+    address constant private CURVE_GAUGE_ADDRESS = 0xbFcF63294aD7105dEa65aA58F8AE5BE2D9d0952A;
+    ICurveGauge constant private CURVE_GAUGE = ICurveGauge(CURVE_GAUGE_ADDRESS);
+
+    function getGaugeBalance() public returns(uint256) {
+        uint256 bal = CURVE_GAUGE.claimable_tokens(address(this));
+        return bal;
     }
 }

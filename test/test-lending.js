@@ -27,7 +27,7 @@ contract("TestCurveLendingSingleAsset", (accounts) => {
         USDT_CONTRACT = await IERC20.at(USDT);
         LENDING_CONTRACT = await LENDING.new();
 
-        await setupSingle(accounts[0], LENDING_CONTRACT, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+        await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
         const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.equal(actualContractBalDAI, 0, "[Setup fault] There is DAI in contract where there should not.");
@@ -60,7 +60,7 @@ contract("TestCurveLendingMultiAsset", (accounts) => {
         USDT_CONTRACT = await IERC20.at(USDT);
         LENDING_CONTRACT = await LENDING.new();
 
-        await setupAll(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
         const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
@@ -94,6 +94,7 @@ contract("TestCurveLendingMultiAsset", (accounts) => {
     });
 });
 
+
 contract("TestCurveLendingWithdrawalSingleAsset", (accounts) => {
     beforeEach(async () => {
         USDT_CONTRACT = await IERC20.at(USDT);
@@ -101,7 +102,7 @@ contract("TestCurveLendingWithdrawalSingleAsset", (accounts) => {
         DAI_CONTRACT = await IERC20.at(DAI);
         LENDING_CONTRACT = await LENDING.new();
 
-        await setupAll(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
         await LENDING_CONTRACT.lendAll();
 
@@ -147,7 +148,7 @@ contract("TestCurveLendingWithdrawalMultiAsset", (accounts) => {
         DAI_CONTRACT = await IERC20.at(DAI);
         LENDING_CONTRACT = await LENDING.new();
 
-        await setupAll(accounts[0], LENDING_CONTRACT, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
         await LENDING_CONTRACT.lendAll();
 
@@ -192,7 +193,7 @@ contract("TestConvexStakingDeposit", (accounts) => {
         USDT_CONTRACT = await IERC20.at(USDT);
         LENDING_CONTRACT = await LENDING.new();
 
-        await setupSingle(accounts[0], LENDING_CONTRACT, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+        await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
         await LENDING_CONTRACT.lendAll();
 
@@ -243,7 +244,7 @@ contract("TestConvexStakingWithdraw", (accounts) => {
         USDT_CONTRACT = await IERC20.at(USDT);
         LENDING_CONTRACT = await LENDING.new();
 
-        await setupSingle(accounts[0], LENDING_CONTRACT, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+        await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
         await LENDING_CONTRACT.lendAll();
 
@@ -265,10 +266,12 @@ contract("TestConvexStakingWithdraw", (accounts) => {
         await timeMachine.revertToSnapshot(snapshotId);
     });
 
-    // TODO issue with withdrawing when there is claimable rewards from time passing
-    it.skip("unstakes and withdraws all convex LP into 3CRV LP", async () => {
+
+    it("unstakes and withdraws all convex LP into 3CRV LP", async () => {
         const stakedConvexLPBal = await LENDING_CONTRACT.getStakedConvexLPBalance();
-        await LENDING_CONTRACT.convexWithdrawStaked(stakedConvexLPBal);
+
+        await LENDING_CONTRACT.convexUnstake(stakedConvexLPBal);
+        await LENDING_CONTRACT.convexWithdraw(stakedConvexLPBal);
 
         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         assert.notEqual(actual3CRVLPBalance, stakedConvexLPBal, "There should be " + stakedConvexLPBal.toString() + " 3CRV.");
@@ -285,6 +288,14 @@ contract("TestConvexStakingWithdraw", (accounts) => {
         const actualCRVbal = await LENDING_CONTRACT.getCRVBalance();
         assert.equal(actualCurrentRewardsBal.toString(), actualCRVbal.toString(), "All CRV should have been claimed.")
     });
+})
+
+contract("TestCurveGauge", (accounts) => {
+    it("getsGaugeBalance", async () => {
+        LENDING_CONTRACT = await LENDING.new();
+        const bal = await LENDING_CONTRACT.getGaugeBalance.call();
+        console.log(bal.toString());
+    })
 })
 
 const debugDisplayAll = async (account) => {
@@ -348,24 +359,24 @@ const debugDisplayAll = async (account) => {
     console.log("\n==========\n");
 };
 
-const setupAll = async (account, LENDING_CONTRACT, ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, ERC20_DECIMAL_1, ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, ERC20_DECIMAL_2, ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3, ERC20_DECIMAL_3) => {
+const setupAll = async (account, DESTINATION, ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, ERC20_DECIMAL_1, ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, ERC20_DECIMAL_2, ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3, ERC20_DECIMAL_3) => {
     const amount = 1;
     await sendETH(account, ERC20_WHALE_ADDRESS_1, amount);
     await sendETH(account, ERC20_WHALE_ADDRESS_2, amount);
     await sendETH(account, ERC20_WHALE_ADDRESS_3, amount);
 
-    const erc20Amount = 100000;
-    await sendERC20(ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, LENDING_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL_1));
-    await sendERC20(ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, LENDING_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL_2));
-    await sendERC20(ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3, LENDING_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL_3));
+    const erc20Amount = 10000000;
+    await sendERC20(ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_1));
+    await sendERC20(ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_2));
+    await sendERC20(ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_3));
 };
 
-const setupSingle = async (account, LENDING_CONTRACT, ERC20_CONTRACT, ERC20_WHALE_ADDRESS, ERC20_DECIMAL) => {
+const setupSingle = async (account, DESTINATION, ERC20_CONTRACT, ERC20_WHALE_ADDRESS, ERC20_DECIMAL) => {
     const amount = 1;
     await sendETH(account, ERC20_WHALE_ADDRESS, amount);
 
-    const erc20Amount = 100000;
-    await sendERC20(ERC20_CONTRACT, ERC20_WHALE_ADDRESS, LENDING_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
+    const erc20Amount = 10000000;
+    await sendERC20(ERC20_CONTRACT, ERC20_WHALE_ADDRESS, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL));
 };
 
 const sendERC20 = async (ERC20_CONTRACT, from, to, amount) => {
@@ -397,5 +408,5 @@ const toDate = (unixTime) => {
 
 const advanceTime = async (months) => {
     const MONTH_IN_SECONDS = 2628000;
-    await timeMachine.advanceTimeAndBlock(MONTH_IN_SECONDS * months);
+    await timeMachine.advanceTimeAndBlock(MONTH_IN_SECONDS);
 }
