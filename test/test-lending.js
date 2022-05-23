@@ -365,7 +365,7 @@ const setupAll = async (account, DESTINATION, ERC20_CONTRACT_1, ERC20_WHALE_ADDR
     await sendETH(account, ERC20_WHALE_ADDRESS_2, amount);
     await sendETH(account, ERC20_WHALE_ADDRESS_3, amount);
 
-    const erc20Amount = 10000000;
+    const erc20Amount = 1000000;
     await sendERC20(ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_1));
     await sendERC20(ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_2));
     await sendERC20(ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_3));
@@ -375,7 +375,7 @@ const setupSingle = async (account, DESTINATION, ERC20_CONTRACT, ERC20_WHALE_ADD
     const amount = 1;
     await sendETH(account, ERC20_WHALE_ADDRESS, amount);
 
-    const erc20Amount = 10000000;
+    const erc20Amount = 1000000;
     await sendERC20(ERC20_CONTRACT, ERC20_WHALE_ADDRESS, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL));
 };
 
