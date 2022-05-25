@@ -256,7 +256,7 @@ contract("TestConvexStakingWithdraw", (accounts) => {
 
         const snapshot = await timeMachine.takeSnapshot();
         snapshotId = snapshot['result'];
-        await advanceTime(2);
+        await advanceTime();
 
         const currentRewardsBal = await LENDING_CONTRACT.getClaimableRewards();
         assert.notEqual(currentRewardsBal, 0, "[Setup fault] Time has elapsed so there should be claimable rewards.")
@@ -290,13 +290,96 @@ contract("TestConvexStakingWithdraw", (accounts) => {
     });
 })
 
+contract("TestCurveOneShotLending", (accounts) => {
+    beforeEach(async () => {
+        USDT_CONTRACT = await IERC20.at(USDT);
+        USDC_CONTRACT = await IERC20.at(USDC);
+        DAI_CONTRACT = await IERC20.at(DAI);
+        LENDING_CONTRACT = await LENDING.new();
+
+        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+        assert.notEqual(actualContractBalDAI, 0, "[Setup fault] There should exist DAI to lend");
+        assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There should exist USDC to lend");
+        assert.notEqual(actualContractBalUSDT,0, "[Setup fault] There should exist USDT to lend");
+    });
+
+    it("lendsToCurveAndStakesToConvex", async () => {
+        await LENDING_CONTRACT.oneShotLendAll();
+
+        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+        assert.equal(actualContractBalDAI, 0, "All DAI should have been lent out");
+        assert.equal(actualContractBalUSDC, 0, "All USDC should have been lent out");
+        assert.equal(actualContractBalUSDT,0, "All USDT should have been lent out");
+
+        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+        assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be deposited and staked into Convex");
+        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should be staked");
+        assert.notEqual(actualStakedConvexLPBalance, 0, "There should be Convex LP staked");
+    });
+});
+
+contract("TestCurveOneShotWithdrawal", (accounts) => {
+    beforeEach(async () => {
+        USDT_CONTRACT = await IERC20.at(USDT);
+        USDC_CONTRACT = await IERC20.at(USDC);
+        DAI_CONTRACT = await IERC20.at(DAI);
+        LENDING_CONTRACT = await LENDING.new();
+
+        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+        await LENDING_CONTRACT.oneShotLendAll();
+
+        const snapshot = await timeMachine.takeSnapshot();
+        snapshotId = snapshot['result'];
+        await advanceTime();
+
+        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+        assert.notEqual(actualStakedConvexLPBalance, 0, "[Setup fault] There should be staked Convex LP to withdraw");
+    });
+
+    afterEach(async () => {
+        await timeMachine.revertToSnapshot(snapshotId);
+    });
+
+    it("withdrawsFromConvexAndUnwrapsToUnderlying", async () => {
+        await LENDING_CONTRACT.oneShotWithdrawAll();
+
+        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+        assert.equal(actualStakedConvexLPBalance, 0, "There should be no Staked Convex LP as all should have been withdrawn into Convex LP and unwrapped");
+        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should have been withdrawan into 3CRV LP and unwrapped");
+        assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be unwrapped into underlying assets");
+
+        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+        assert.notEqual(actualContractBalDAI, 0, "There should exist DAI from withdrawal");
+        assert.notEqual(actualContractBalUSDC, 0, "There should exist USDC from withdrawal");
+        assert.notEqual(actualContractBalUSDT,0, "There should exist USDT from withdrawal");
+    });
+});
+
 contract("TestCurveGauge", (accounts) => {
     it("getsGaugeBalance", async () => {
         LENDING_CONTRACT = await LENDING.new();
         const bal = await LENDING_CONTRACT.getGaugeBalance.call();
         console.log(bal.toString());
-    })
-})
+    });
+});
 
 const debugDisplayAll = async (account) => {
     const currentBlockNumber = await web3.eth.getBlockNumber();
@@ -406,7 +489,7 @@ const toDate = (unixTime) => {
     return date.toLocaleString()
 }
 
-const advanceTime = async (months) => {
+const advanceTime = async () => {
     const MONTH_IN_SECONDS = 2628000;
     await timeMachine.advanceTimeAndBlock(MONTH_IN_SECONDS);
 }

@@ -186,4 +186,17 @@ contract CurveLending {
         uint256 bal = CURVE_GAUGE.claimable_tokens(address(this));
         return bal;
     }
+
+    function oneShotLendAll() public {
+        lendAll();
+        uint256 CRV3LPBal = get3CRVLPBalance();
+        convexDeposit(CRV3LPBal, true);
+    }
+
+    function oneShotWithdrawAll() public {
+        uint256 stakedBal = getStakedConvexLPBalance();
+        convexUnstake(stakedBal);
+        convexWithdraw(stakedBal);
+        withdrawAllLP(-1);
+    }
 }

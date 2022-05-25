@@ -21,7 +21,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"claimable_tokens\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Lending.sol\":\"ICurveGauge\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xbbc8ac883ac3c0078ce5ad3e288fbb3ffcc8a30c3a98c0fda0114d64fc44fca2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://87a7a5d2f6f63f84598af02b8c50ca2df2631cb8ba2453e8d95fcb17e4be9824\",\"dweb:/ipfs/QmR76hqtAcRqoFj33tmNjcWTLrgNsAaakYwnKZ8zoJtKei\"]},\"@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0xc3d946432c0ddbb1f846a0d3985be71299df331b91d06732152117f62f0be2b5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4632c341a06ba5c079b51ca5a915efab4e6ab57735b37839b3e8365ff806a43e\",\"dweb:/ipfs/QmTHT3xHYed2wajEoA5qu7ii2BxLpPhQZHwAhtLK5Z7ANK\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x2ccf9d2313a313d41a791505f2b5abfdc62191b5d4334f7f7a82691c088a1c87\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b3a57d0854b2fdce6ebff933a48dca2445643d1eccfc27f00292e937f26c6a58\",\"dweb:/ipfs/QmW45rZooS9TqR4YXUbjRbtf2Bpb5ouSarBvfW1LdGprvV\"]},\"project:/contracts/Lending.sol\":{\"keccak256\":\"0x3f4ecb371c07221b2dc499187a4ed78a52b8004dff804bf3e39750bdcdb80171\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4b07bf79568dc9826414590a68f534d8bdb6ea70f3cd1aff5fa265d66d7ac682\",\"dweb:/ipfs/QmNZXCpHYyTZkgypdXMwLzuGnRTd3uqHqKNBPN63twGHSG\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"claimable_tokens\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Lending.sol\":\"ICurveGauge\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xbbc8ac883ac3c0078ce5ad3e288fbb3ffcc8a30c3a98c0fda0114d64fc44fca2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://87a7a5d2f6f63f84598af02b8c50ca2df2631cb8ba2453e8d95fcb17e4be9824\",\"dweb:/ipfs/QmR76hqtAcRqoFj33tmNjcWTLrgNsAaakYwnKZ8zoJtKei\"]},\"@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0xc3d946432c0ddbb1f846a0d3985be71299df331b91d06732152117f62f0be2b5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4632c341a06ba5c079b51ca5a915efab4e6ab57735b37839b3e8365ff806a43e\",\"dweb:/ipfs/QmTHT3xHYed2wajEoA5qu7ii2BxLpPhQZHwAhtLK5Z7ANK\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x2ccf9d2313a313d41a791505f2b5abfdc62191b5d4334f7f7a82691c088a1c87\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b3a57d0854b2fdce6ebff933a48dca2445643d1eccfc27f00292e937f26c6a58\",\"dweb:/ipfs/QmW45rZooS9TqR4YXUbjRbtf2Bpb5ouSarBvfW1LdGprvV\"]},\"project:/contracts/Lending.sol\":{\"keccak256\":\"0x7936deab480da841b62e076309a64818ede704f393069a8350f08e089ac09963\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d8019dc8fa6e86812769daf12d3c86e54649630bae0532ce1872fd0e19fd92c6\",\"dweb:/ipfs/QmWgfujR88GXGd3FNq2ayNawZnMpSpANBfnRivQ6ewnGXR\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -29,7 +29,7 @@
   "deployedGeneratedSources": [],
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.3;\n\nimport \"@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\";\n\ninterface ICurve3Pool {\n   function add_liquidity(uint256[3] calldata amounts, uint256 min_mint_amount) external;\n   function remove_liquidity(uint256 _amount, uint256[3] calldata min_amounts) external;\n   function remove_liquidity_one_coin(uint256 _token_amount, int128 i, uint256 min_amount) external;\n}\n\ninterface ICURVE3LPToken {\n    function balanceOf(address addr) external view returns(uint256);\n    function approve(address _spender, uint256 _value) external returns(bool);\n}\n\n// Also known as the \"Deposit contract\"\ninterface IConvexBooster {\n    //deposit into convex, receive a tokenized deposit.  parameter to stake immediately\n    function deposit(uint256 _pid, uint256 _amount, bool _stake) external returns(bool);\n    //burn a tokenized deposit to receive curve lp tokens back\n    function withdraw(uint256 _pid, uint256 _amount) external returns(bool);\n    //burn all tokenized deposit to receive all curve lp tokens back\n    function withdrawAll(uint256 _pid) external returns(bool);\n}\n\ninterface IConvexRewards {\n    //get balance of an address\n    function balanceOf(address _account) external view returns(uint256);\n    //withdraw to a convex tokenized deposit\n    function withdraw(uint256 _amount, bool _claim) external returns(bool);\n    //withdraw directly to curve LP token\n    function withdrawAndUnwrap(uint256 _amount, bool _claim) external returns(bool);\n    //claim rewards\n    function getReward() external returns(bool);\n    //stake a convex tokenized deposit\n    function stake(uint256 _amount) external returns(bool);\n    //stake a convex tokenized deposit for another address(transfering ownership)\n    function stakeFor(address _account,uint256 _amount) external returns(bool);\n    //get earned awards of an address\n    function earned(address account) external view returns (uint256);\n}\n\ninterface ICurveGauge {\n    function claimable_tokens(address addr) external returns(uint256);\n}\n\ncontract CurveLending {\n    using SafeERC20 for IERC20;\n\n    uint constant DAI_INDEX = 0;\n    uint constant USDC_INDEX = 1;\n    uint constant USDT_INDEX = 2;\n\n    address constant private DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;\n    address constant private USDC_ADDRESS = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;\n    address constant private USDT_ADDRESS = 0xdAC17F958D2ee523a2206206994597C13D831ec7;\n    IERC20 constant private DAI = IERC20(DAI_ADDRESS);\n    IERC20 constant private USDC = IERC20(USDC_ADDRESS);\n    IERC20 constant private USDT = IERC20(USDT_ADDRESS);\n\n    IERC20[3] token = [DAI, USDC, USDT];\n\n    address constant private CURVE3POOL_ADDRESS = 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7;\n    ICurve3Pool constant private CURVE3POOL = ICurve3Pool(CURVE3POOL_ADDRESS);\n\n    function lendAll() public {\n        uint256[3] memory balance = getBalance();\n        approveLend(balance);\n        uint256 min_mint_amount = 1;\n        CURVE3POOL.add_liquidity(balance, min_mint_amount);\n    }\n\n    function lend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public {\n        uint256[3] memory balance = [daiAmount, usdcAmount, usdtAmount];\n        approveLend(balance);\n        uint256 min_mint_amount = 1;\n        CURVE3POOL.add_liquidity(balance, min_mint_amount);\n    }\n\n    function getBalance() view private returns(uint256[3] memory) {\n       uint256 balToken0 = token[0].balanceOf(address(this));\n       uint256 balToken1 = token[1].balanceOf(address(this));\n       uint256 balToken2 = token[2].balanceOf(address(this));\n       return [balToken0, balToken1, balToken2];\n    }\n\n    function approveLend(uint256[3] memory balance) private {\n        for (uint i = 0; i < balance.length; i++) {\n            token[i].safeApprove(CURVE3POOL_ADDRESS, balance[i]);\n        }\n    }\n\n    address constant private CRV3LP_ADDRESS = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;\n    ICURVE3LPToken constant private CRV3LP_TOKEN = ICURVE3LPToken(CRV3LP_ADDRESS);\n\n    function get3CRVLPBalance() public view returns(uint256) {\n        return CRV3LP_TOKEN.balanceOf(address(this));\n    }\n\n    function withdrawAllLP(int128 coinIndex) public {\n        uint256 bal = get3CRVLPBalance();\n        if (coinIndex == -1) {\n            uint256[3] memory minAmount = [uint256(0), 0, 0];\n            CURVE3POOL.remove_liquidity(bal, minAmount);\n        } else {\n            uint256 minAmount = 0;\n            CURVE3POOL.remove_liquidity_one_coin(bal, coinIndex, minAmount);\n        }\n    }\n\n    function withdrawLP(int128 coinIndex, uint256 lpAmount) public {\n        if (coinIndex == -1) {\n            uint256[3] memory minAmount = [uint256(0), 0, 0];\n            CURVE3POOL.remove_liquidity(lpAmount, minAmount);\n        } else {\n            uint256 minAmount = 0;\n            CURVE3POOL.remove_liquidity_one_coin(lpAmount, coinIndex, minAmount);\n        }\n    }\n\n    // https://etherscan.io/address/0x9700152175dc22E7d1f3245fE3c1D2cfa3602548#readContract\n    uint256 constant private PID = 9;\n\n    address constant private BOOSTER_CONTRACT_ADDRESS = 0xF403C135812408BFbE8713b5A23a04b3D48AAE31;\n    IConvexBooster constant private CONVEX_BOOSTER = IConvexBooster(BOOSTER_CONTRACT_ADDRESS);\n    address constant private CONVEX_3POOL_REWARDS_ADDRESS = 0x689440f2Ff927E1f24c72F1087E1FAF471eCe1c8;\n    IConvexRewards constant private CONVEX_3POOL_REWARDS = IConvexRewards(CONVEX_3POOL_REWARDS_ADDRESS);\n    address constant private CONVEX_3CRV_TOKEN_ADDRESS = 0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C;\n    IERC20 constant private CONVEX_3CRV_TOKEN = IERC20(CONVEX_3CRV_TOKEN_ADDRESS);\n\n    function convexDeposit(uint256 amount, bool toStake) public {\n        CRV3LP_TOKEN.approve(BOOSTER_CONTRACT_ADDRESS, amount);\n        CONVEX_BOOSTER.deposit(PID, amount, toStake);\n    }\n\n    function getConvexLPBalance() public view returns(uint256) {\n        return CONVEX_3CRV_TOKEN.balanceOf(address(this));\n    }\n\n    function getStakedConvexLPBalance() public view returns(uint256) {\n        return CONVEX_3POOL_REWARDS.balanceOf(address(this));\n    }\n\n    function getClaimableRewards() public view returns(uint256) {\n        return CONVEX_3POOL_REWARDS.earned(address(this));\n    }\n\n    address constant private CRV_TOKEN_ADDRESS = 0xD533a949740bb3306d119CC777fa900bA034cd52;\n    IERC20 constant private CRV_TOKEN = IERC20(CRV_TOKEN_ADDRESS);\n\n    function getCRVBalance() public view returns(uint256) {\n        return CRV_TOKEN.balanceOf(address(this));\n    }\n\n    address constant private CVX_TOKEN_ADDRESS = 0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B;\n    IERC20 constant private CVX_TOKEN = IERC20(CVX_TOKEN_ADDRESS);\n\n    function getCVXBalance() public view returns(uint256) {\n        return CVX_TOKEN.balanceOf(address(this));\n    }\n\n    function claimRewards() public {\n        CONVEX_3POOL_REWARDS.getReward();\n    }\n\n    // TODO check when no rewards to claim (if need to normalise rewards w.r.t. ERC20 decimal)\n    modifier hasClaimableRewards {\n        uint256 rewards = getClaimableRewards();\n        require(rewards != 0, \"There are no claimable rewards so we cannot call this function as it tries to claim and mint non-existent rewards\");\n        _;\n    }\n\n    function convexUnstake(uint256 amount) public hasClaimableRewards {\n        CONVEX_3POOL_REWARDS.withdraw(amount, true);\n    }\n\n    function convexWithdraw(uint256 amount) public {\n        CONVEX_BOOSTER.withdraw(PID, amount);\n    }\n\n    address constant private CURVE_GAUGE_ADDRESS = 0xbFcF63294aD7105dEa65aA58F8AE5BE2D9d0952A;\n    ICurveGauge constant private CURVE_GAUGE = ICurveGauge(CURVE_GAUGE_ADDRESS);\n\n    function getGaugeBalance() public returns(uint256) {\n        uint256 bal = CURVE_GAUGE.claimable_tokens(address(this));\n        return bal;\n    }\n}",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.3;\n\nimport \"@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\";\n\ninterface ICurve3Pool {\n   function add_liquidity(uint256[3] calldata amounts, uint256 min_mint_amount) external;\n   function remove_liquidity(uint256 _amount, uint256[3] calldata min_amounts) external;\n   function remove_liquidity_one_coin(uint256 _token_amount, int128 i, uint256 min_amount) external;\n}\n\ninterface ICURVE3LPToken {\n    function balanceOf(address addr) external view returns(uint256);\n    function approve(address _spender, uint256 _value) external returns(bool);\n}\n\n// Also known as the \"Deposit contract\"\ninterface IConvexBooster {\n    //deposit into convex, receive a tokenized deposit.  parameter to stake immediately\n    function deposit(uint256 _pid, uint256 _amount, bool _stake) external returns(bool);\n    //burn a tokenized deposit to receive curve lp tokens back\n    function withdraw(uint256 _pid, uint256 _amount) external returns(bool);\n    //burn all tokenized deposit to receive all curve lp tokens back\n    function withdrawAll(uint256 _pid) external returns(bool);\n}\n\ninterface IConvexRewards {\n    //get balance of an address\n    function balanceOf(address _account) external view returns(uint256);\n    //withdraw to a convex tokenized deposit\n    function withdraw(uint256 _amount, bool _claim) external returns(bool);\n    //withdraw directly to curve LP token\n    function withdrawAndUnwrap(uint256 _amount, bool _claim) external returns(bool);\n    //claim rewards\n    function getReward() external returns(bool);\n    //stake a convex tokenized deposit\n    function stake(uint256 _amount) external returns(bool);\n    //stake a convex tokenized deposit for another address(transfering ownership)\n    function stakeFor(address _account,uint256 _amount) external returns(bool);\n    //get earned awards of an address\n    function earned(address account) external view returns (uint256);\n}\n\ninterface ICurveGauge {\n    function claimable_tokens(address addr) external returns(uint256);\n}\n\ncontract CurveLending {\n    using SafeERC20 for IERC20;\n\n    uint constant DAI_INDEX = 0;\n    uint constant USDC_INDEX = 1;\n    uint constant USDT_INDEX = 2;\n\n    address constant private DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;\n    address constant private USDC_ADDRESS = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;\n    address constant private USDT_ADDRESS = 0xdAC17F958D2ee523a2206206994597C13D831ec7;\n    IERC20 constant private DAI = IERC20(DAI_ADDRESS);\n    IERC20 constant private USDC = IERC20(USDC_ADDRESS);\n    IERC20 constant private USDT = IERC20(USDT_ADDRESS);\n\n    IERC20[3] token = [DAI, USDC, USDT];\n\n    address constant private CURVE3POOL_ADDRESS = 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7;\n    ICurve3Pool constant private CURVE3POOL = ICurve3Pool(CURVE3POOL_ADDRESS);\n\n    function lendAll() public {\n        uint256[3] memory balance = getBalance();\n        approveLend(balance);\n        uint256 min_mint_amount = 1;\n        CURVE3POOL.add_liquidity(balance, min_mint_amount);\n    }\n\n    function lend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public {\n        uint256[3] memory balance = [daiAmount, usdcAmount, usdtAmount];\n        approveLend(balance);\n        uint256 min_mint_amount = 1;\n        CURVE3POOL.add_liquidity(balance, min_mint_amount);\n    }\n\n    function getBalance() view private returns(uint256[3] memory) {\n       uint256 balToken0 = token[0].balanceOf(address(this));\n       uint256 balToken1 = token[1].balanceOf(address(this));\n       uint256 balToken2 = token[2].balanceOf(address(this));\n       return [balToken0, balToken1, balToken2];\n    }\n\n    function approveLend(uint256[3] memory balance) private {\n        for (uint i = 0; i < balance.length; i++) {\n            token[i].safeApprove(CURVE3POOL_ADDRESS, balance[i]);\n        }\n    }\n\n    address constant private CRV3LP_ADDRESS = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;\n    ICURVE3LPToken constant private CRV3LP_TOKEN = ICURVE3LPToken(CRV3LP_ADDRESS);\n\n    function get3CRVLPBalance() public view returns(uint256) {\n        return CRV3LP_TOKEN.balanceOf(address(this));\n    }\n\n    function withdrawAllLP(int128 coinIndex) public {\n        uint256 bal = get3CRVLPBalance();\n        if (coinIndex == -1) {\n            uint256[3] memory minAmount = [uint256(0), 0, 0];\n            CURVE3POOL.remove_liquidity(bal, minAmount);\n        } else {\n            uint256 minAmount = 0;\n            CURVE3POOL.remove_liquidity_one_coin(bal, coinIndex, minAmount);\n        }\n    }\n\n    function withdrawLP(int128 coinIndex, uint256 lpAmount) public {\n        if (coinIndex == -1) {\n            uint256[3] memory minAmount = [uint256(0), 0, 0];\n            CURVE3POOL.remove_liquidity(lpAmount, minAmount);\n        } else {\n            uint256 minAmount = 0;\n            CURVE3POOL.remove_liquidity_one_coin(lpAmount, coinIndex, minAmount);\n        }\n    }\n\n    // https://etherscan.io/address/0x9700152175dc22E7d1f3245fE3c1D2cfa3602548#readContract\n    uint256 constant private PID = 9;\n\n    address constant private BOOSTER_CONTRACT_ADDRESS = 0xF403C135812408BFbE8713b5A23a04b3D48AAE31;\n    IConvexBooster constant private CONVEX_BOOSTER = IConvexBooster(BOOSTER_CONTRACT_ADDRESS);\n    address constant private CONVEX_3POOL_REWARDS_ADDRESS = 0x689440f2Ff927E1f24c72F1087E1FAF471eCe1c8;\n    IConvexRewards constant private CONVEX_3POOL_REWARDS = IConvexRewards(CONVEX_3POOL_REWARDS_ADDRESS);\n    address constant private CONVEX_3CRV_TOKEN_ADDRESS = 0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C;\n    IERC20 constant private CONVEX_3CRV_TOKEN = IERC20(CONVEX_3CRV_TOKEN_ADDRESS);\n\n    function convexDeposit(uint256 amount, bool toStake) public {\n        CRV3LP_TOKEN.approve(BOOSTER_CONTRACT_ADDRESS, amount);\n        CONVEX_BOOSTER.deposit(PID, amount, toStake);\n    }\n\n    function getConvexLPBalance() public view returns(uint256) {\n        return CONVEX_3CRV_TOKEN.balanceOf(address(this));\n    }\n\n    function getStakedConvexLPBalance() public view returns(uint256) {\n        return CONVEX_3POOL_REWARDS.balanceOf(address(this));\n    }\n\n    function getClaimableRewards() public view returns(uint256) {\n        return CONVEX_3POOL_REWARDS.earned(address(this));\n    }\n\n    address constant private CRV_TOKEN_ADDRESS = 0xD533a949740bb3306d119CC777fa900bA034cd52;\n    IERC20 constant private CRV_TOKEN = IERC20(CRV_TOKEN_ADDRESS);\n\n    function getCRVBalance() public view returns(uint256) {\n        return CRV_TOKEN.balanceOf(address(this));\n    }\n\n    address constant private CVX_TOKEN_ADDRESS = 0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B;\n    IERC20 constant private CVX_TOKEN = IERC20(CVX_TOKEN_ADDRESS);\n\n    function getCVXBalance() public view returns(uint256) {\n        return CVX_TOKEN.balanceOf(address(this));\n    }\n\n    function claimRewards() public {\n        CONVEX_3POOL_REWARDS.getReward();\n    }\n\n    // TODO check when no rewards to claim (if need to normalise rewards w.r.t. ERC20 decimal)\n    modifier hasClaimableRewards {\n        uint256 rewards = getClaimableRewards();\n        require(rewards != 0, \"There are no claimable rewards so we cannot call this function as it tries to claim and mint non-existent rewards\");\n        _;\n    }\n\n    function convexUnstake(uint256 amount) public hasClaimableRewards {\n        CONVEX_3POOL_REWARDS.withdraw(amount, true);\n    }\n\n    function convexWithdraw(uint256 amount) public {\n        CONVEX_BOOSTER.withdraw(PID, amount);\n    }\n\n    address constant private CURVE_GAUGE_ADDRESS = 0xbFcF63294aD7105dEa65aA58F8AE5BE2D9d0952A;\n    ICurveGauge constant private CURVE_GAUGE = ICurveGauge(CURVE_GAUGE_ADDRESS);\n\n    function getGaugeBalance() public returns(uint256) {\n        uint256 bal = CURVE_GAUGE.claimable_tokens(address(this));\n        return bal;\n    }\n\n    function oneShotLendAll() public {\n        lendAll();\n        uint256 CRV3LPBal = get3CRVLPBalance();\n        convexDeposit(CRV3LPBal, true);\n    }\n\n    function oneShotWithdrawAll() public {\n        uint256 stakedBal = getStakedConvexLPBalance();\n        convexUnstake(stakedBal);\n        convexWithdraw(stakedBal);\n        withdrawAllLP(-1);\n    }\n}",
   "sourcePath": "/root/DeFiSandbox/contracts/Lending.sol",
   "ast": {
     "absolutePath": "project:/contracts/Lending.sol",
@@ -38,7 +38,7 @@
         596
       ],
       "CurveLending": [
-        1280
+        1319
       ],
       "ICURVE3LPToken": [
         644
@@ -62,7 +62,7 @@
         301
       ]
     },
-    "id": 1281,
+    "id": 1320,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
@@ -83,7 +83,7 @@
         "id": 599,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 1281,
+        "scope": 1320,
         "sourceUnit": 302,
         "src": "57:65:3",
         "symbolAliases": [],
@@ -428,7 +428,7 @@
             "visibility": "external"
           }
         ],
-        "scope": 1281,
+        "scope": 1320,
         "src": "124:305:3",
         "usedErrors": []
       },
@@ -643,7 +643,7 @@
             "visibility": "external"
           }
         ],
-        "scope": 1281,
+        "scope": 1320,
         "src": "431:176:3",
         "usedErrors": []
       },
@@ -993,7 +993,7 @@
             "visibility": "external"
           }
         ],
-        "scope": 1281,
+        "scope": 1320,
         "src": "649:477:3",
         "usedErrors": []
       },
@@ -1650,7 +1650,7 @@
             "visibility": "external"
           }
         ],
-        "scope": 1281,
+        "scope": 1320,
         "src": "1128:819:3",
         "usedErrors": []
       },
@@ -1754,7 +1754,7 @@
             "visibility": "external"
           }
         ],
-        "scope": 1281,
+        "scope": 1320,
         "src": "1949:96:3",
         "usedErrors": []
       },
@@ -1765,9 +1765,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 1280,
+        "id": 1319,
         "linearizedBaseContracts": [
-          1280
+          1319
         ],
         "name": "CurveLending",
         "nameLocation": "2056:12:3",
@@ -1810,7 +1810,7 @@
             "name": "DAI_INDEX",
             "nameLocation": "2122:9:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2108:27:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1853,7 +1853,7 @@
             "name": "USDC_INDEX",
             "nameLocation": "2155:10:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2141:28:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1896,7 +1896,7 @@
             "name": "USDT_INDEX",
             "nameLocation": "2189:10:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2175:28:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1939,7 +1939,7 @@
             "name": "DAI_ADDRESS",
             "nameLocation": "2235:11:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2210:81:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1983,7 +1983,7 @@
             "name": "USDC_ADDRESS",
             "nameLocation": "2322:12:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2297:82:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2027,7 +2027,7 @@
             "name": "USDT_ADDRESS",
             "nameLocation": "2410:12:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2385:82:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2071,7 +2071,7 @@
             "name": "DAI",
             "nameLocation": "2497:3:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2473:49:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2153,7 +2153,7 @@
             "name": "USDC",
             "nameLocation": "2552:4:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2528:51:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2235,7 +2235,7 @@
             "name": "USDT",
             "nameLocation": "2609:4:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2585:51:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2317,7 +2317,7 @@
             "name": "token",
             "nameLocation": "2653:5:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2643:35:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2428,7 +2428,7 @@
             "name": "CURVE3POOL_ADDRESS",
             "nameLocation": "2710:18:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2685:88:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2472,7 +2472,7 @@
             "name": "CURVE3POOL",
             "nameLocation": "2808:10:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "2779:73:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2857,7 +2857,7 @@
               "parameters": [],
               "src": "2885:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "2859:210:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -3277,7 +3277,7 @@
               "parameters": [],
               "src": "3155:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "3075:287:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -3335,7 +3335,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "3486:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -3343,7 +3343,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -3508,7 +3508,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "3548:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -3516,7 +3516,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -3681,7 +3681,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "3610:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -3689,7 +3689,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -3940,7 +3940,7 @@
               ],
               "src": "3410:19:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "3368:304:3",
             "stateMutability": "view",
             "virtual": false,
@@ -4313,7 +4313,7 @@
               "parameters": [],
               "src": "3734:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "3678:191:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -4326,7 +4326,7 @@
             "name": "CRV3LP_ADDRESS",
             "nameLocation": "3900:14:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "3875:84:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -4370,7 +4370,7 @@
             "name": "CRV3LP_TOKEN",
             "nameLocation": "3997:12:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "3965:77:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -4464,7 +4464,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "4154:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -4472,7 +4472,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -4614,7 +4614,7 @@
               ],
               "src": "4096:9:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "4049:118:3",
             "stateMutability": "view",
             "virtual": false,
@@ -5230,7 +5230,7 @@
               "parameters": [],
               "src": "4221:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "4173:386:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -5806,7 +5806,7 @@
               "parameters": [],
               "src": "4628:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "4565:369:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -5819,7 +5819,7 @@
             "name": "PID",
             "nameLocation": "5057:3:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "5032:32:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -5862,7 +5862,7 @@
             "name": "BOOSTER_CONTRACT_ADDRESS",
             "nameLocation": "5096:24:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "5071:94:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -5906,7 +5906,7 @@
             "name": "CONVEX_BOOSTER",
             "nameLocation": "5203:14:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "5171:89:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -5988,7 +5988,7 @@
             "name": "CONVEX_3POOL_REWARDS_ADDRESS",
             "nameLocation": "5291:28:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "5266:98:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -6032,7 +6032,7 @@
             "name": "CONVEX_3POOL_REWARDS",
             "nameLocation": "5402:20:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "5370:99:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -6114,7 +6114,7 @@
             "name": "CONVEX_3CRV_TOKEN_ADDRESS",
             "nameLocation": "5500:25:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "5475:95:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -6158,7 +6158,7 @@
             "name": "CONVEX_3CRV_TOKEN",
             "nameLocation": "5600:17:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "5576:77:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -6500,7 +6500,7 @@
               "parameters": [],
               "src": "5720:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "5660:185:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -6525,7 +6525,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "5963:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -6533,7 +6533,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -6675,7 +6675,7 @@
               ],
               "src": "5900:9:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "5851:125:3",
             "stateMutability": "view",
             "virtual": false,
@@ -6700,7 +6700,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "6103:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -6708,7 +6708,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -6850,7 +6850,7 @@
               ],
               "src": "6037:9:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "5982:134:3",
             "stateMutability": "view",
             "virtual": false,
@@ -6875,7 +6875,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "6235:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -6883,7 +6883,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -7025,7 +7025,7 @@
               ],
               "src": "6172:9:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "6122:126:3",
             "stateMutability": "view",
             "virtual": false,
@@ -7038,7 +7038,7 @@
             "name": "CRV_TOKEN_ADDRESS",
             "nameLocation": "6279:17:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "6254:87:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -7082,7 +7082,7 @@
             "name": "CRV_TOKEN",
             "nameLocation": "6371:9:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "6347:61:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -7176,7 +7176,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "6514:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -7184,7 +7184,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -7326,7 +7326,7 @@
               ],
               "src": "6459:9:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "6415:112:3",
             "stateMutability": "view",
             "virtual": false,
@@ -7339,7 +7339,7 @@
             "name": "CVX_TOKEN_ADDRESS",
             "nameLocation": "6558:17:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "6533:87:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -7383,7 +7383,7 @@
             "name": "CVX_TOKEN",
             "nameLocation": "6650:9:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "6626:61:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -7477,7 +7477,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "6793:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -7485,7 +7485,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -7627,7 +7627,7 @@
               ],
               "src": "6738:9:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "6694:112:3",
             "stateMutability": "view",
             "virtual": false,
@@ -7711,7 +7711,7 @@
               "parameters": [],
               "src": "6843:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "6812:80:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -8079,7 +8079,7 @@
               "parameters": [],
               "src": "7309:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "7243:126:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -8225,7 +8225,7 @@
               "parameters": [],
               "src": "7422:0:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "7375:100:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -8238,7 +8238,7 @@
             "name": "CURVE_GAUGE_ADDRESS",
             "nameLocation": "7506:19:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "7481:89:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -8282,7 +8282,7 @@
             "name": "CURVE_GAUGE",
             "nameLocation": "7605:11:3",
             "nodeType": "VariableDeclaration",
-            "scope": 1280,
+            "scope": 1319,
             "src": "7576:75:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -8409,7 +8409,7 @@
                             "referencedDeclaration": 4294967268,
                             "src": "7770:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           }
@@ -8417,7 +8417,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_CurveLending_$1280",
+                              "typeIdentifier": "t_contract$_CurveLending_$1319",
                               "typeString": "contract CurveLending"
                             }
                           ],
@@ -8575,19 +8575,507 @@
               ],
               "src": "7699:9:3"
             },
-            "scope": 1280,
+            "scope": 1319,
             "src": "7658:145:3",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 1295,
+              "nodeType": "Block",
+              "src": "7842:114:3",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 1282,
+                      "name": "lendAll",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 820,
+                      "src": "7852:7:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
+                        "typeString": "function ()"
+                      }
+                    },
+                    "id": 1283,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "7852:9:3",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1284,
+                  "nodeType": "ExpressionStatement",
+                  "src": "7852:9:3"
+                },
+                {
+                  "assignments": [
+                    1286
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 1286,
+                      "mutability": "mutable",
+                      "name": "CRV3LPBal",
+                      "nameLocation": "7879:9:3",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 1295,
+                      "src": "7871:17:3",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 1285,
+                        "name": "uint256",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "7871:7:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 1289,
+                  "initialValue": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 1287,
+                      "name": "get3CRVLPBalance",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 959,
+                      "src": "7891:16:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_view$__$returns$_t_uint256_$",
+                        "typeString": "function () view returns (uint256)"
+                      }
+                    },
+                    "id": 1288,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "7891:18:3",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "7871:38:3"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 1291,
+                        "name": "CRV3LPBal",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1286,
+                        "src": "7933:9:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "hexValue": "74727565",
+                        "id": 1292,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "bool",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "7944:4:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        "value": "true"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 1290,
+                      "name": "convexDeposit",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1111,
+                      "src": "7919:13:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_bool_$returns$__$",
+                        "typeString": "function (uint256,bool)"
+                      }
+                    },
+                    "id": 1293,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "7919:30:3",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1294,
+                  "nodeType": "ExpressionStatement",
+                  "src": "7919:30:3"
+                }
+              ]
+            },
+            "functionSelector": "567d0f07",
+            "id": 1296,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "oneShotLendAll",
+            "nameLocation": "7818:14:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1280,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7832:2:3"
+            },
+            "returnParameters": {
+              "id": 1281,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7842:0:3"
+            },
+            "scope": 1319,
+            "src": "7809:147:3",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 1317,
+              "nodeType": "Block",
+              "src": "7999:159:3",
+              "statements": [
+                {
+                  "assignments": [
+                    1300
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 1300,
+                      "mutability": "mutable",
+                      "name": "stakedBal",
+                      "nameLocation": "8017:9:3",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 1317,
+                      "src": "8009:17:3",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 1299,
+                        "name": "uint256",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "8009:7:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 1303,
+                  "initialValue": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 1301,
+                      "name": "getStakedConvexLPBalance",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1139,
+                      "src": "8029:24:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_view$__$returns$_t_uint256_$",
+                        "typeString": "function () view returns (uint256)"
+                      }
+                    },
+                    "id": 1302,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "8029:26:3",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "8009:46:3"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 1305,
+                        "name": "stakedBal",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1300,
+                        "src": "8079:9:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 1304,
+                      "name": "convexUnstake",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1239,
+                      "src": "8065:13:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$returns$__$",
+                        "typeString": "function (uint256)"
+                      }
+                    },
+                    "id": 1306,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "8065:24:3",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1307,
+                  "nodeType": "ExpressionStatement",
+                  "src": "8065:24:3"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 1309,
+                        "name": "stakedBal",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1300,
+                        "src": "8114:9:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 1308,
+                      "name": "convexWithdraw",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1252,
+                      "src": "8099:14:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$returns$__$",
+                        "typeString": "function (uint256)"
+                      }
+                    },
+                    "id": 1310,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "8099:25:3",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1311,
+                  "nodeType": "ExpressionStatement",
+                  "src": "8099:25:3"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 1314,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "UnaryOperation",
+                        "operator": "-",
+                        "prefix": true,
+                        "src": "8148:2:3",
+                        "subExpression": {
+                          "hexValue": "31",
+                          "id": 1313,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "number",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "8149:1:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_rational_1_by_1",
+                            "typeString": "int_const 1"
+                          },
+                          "value": "1"
+                        },
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_minus_1_by_1",
+                          "typeString": "int_const -1"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_rational_minus_1_by_1",
+                          "typeString": "int_const -1"
+                        }
+                      ],
+                      "id": 1312,
+                      "name": "withdrawAllLP",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1010,
+                      "src": "8134:13:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_int128_$returns$__$",
+                        "typeString": "function (int128)"
+                      }
+                    },
+                    "id": 1315,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "8134:17:3",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1316,
+                  "nodeType": "ExpressionStatement",
+                  "src": "8134:17:3"
+                }
+              ]
+            },
+            "functionSelector": "e70fbd07",
+            "id": 1318,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "oneShotWithdrawAll",
+            "nameLocation": "7971:18:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1297,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7989:2:3"
+            },
+            "returnParameters": {
+              "id": 1298,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7999:0:3"
+            },
+            "scope": 1319,
+            "src": "7962:196:3",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 1281,
-        "src": "2047:5758:3",
+        "scope": 1320,
+        "src": "2047:6113:3",
         "usedErrors": []
       }
     ],
-    "src": "32:7773:3"
+    "src": "32:8128:3"
   },
   "compiler": {
     "name": "solc",
@@ -8595,7 +9083,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-05-23T10:53:28.472Z",
+  "updatedAt": "2022-05-25T21:52:50.786Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
