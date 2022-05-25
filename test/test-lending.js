@@ -381,6 +381,12 @@ contract("TestCurveGauge", (accounts) => {
     });
 });
 
+contract("AdvanceTime", (accounts) => {
+    it("advancesTimeByOneMonth", async () => {
+        await advanceTime();
+    });
+});
+
 const debugDisplayAll = async (account) => {
     const currentBlockNumber = await web3.eth.getBlockNumber();
     const currentBlockDate =toDate((await web3.eth.getBlock(currentBlockNumber)).timestamp);
