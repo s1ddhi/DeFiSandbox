@@ -327,6 +327,30 @@ contract("TestCurveOneShotLending", (accounts) => {
         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should be staked");
         assert.notEqual(actualStakedConvexLPBalance, 0, "There should be Convex LP staked");
     });
+
+    it("lendsPartialToCurveAndStakesToConvex", async () => {
+        const initial3CRVLPBal = await LENDING_CONTRACT.get3CRVLPBalance();
+        const amountToDeposit = web3.utils.toBN(initial3CRVLPBal).div(web3.utils.toBN(2))
+        const expected3CRVLPBalRemaining = initial3CRVLPBal - amountToDeposit;
+
+        await LENDING_CONTRACT.oneShotLend(amountToDeposit);
+
+        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+        assert.equal(actualContractBalDAI, 0, "All DAI should have been lent out");
+        assert.equal(actualContractBalUSDC, 0, "All USDC should have been lent out");
+        assert.equal(actualContractBalUSDT,0, "All USDT should have been lent out");
+
+        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+        assert.equal(actual3CRVLPBalance, expected3CRVLPBalRemaining, `There should be ${expected3CRVLPBalRemaining} 3CRV LP as only half should be deposited and staked into Convex`);
+        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should be staked");
+        assert.notEqual(actualStakedConvexLPBalance, 0, "There should be Convex LP staked");
+    });
 });
 
 contract("TestCurveOneShotWithdrawal", (accounts) => {
@@ -360,6 +384,30 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
 
         assert.equal(actualStakedConvexLPBalance, 0, "There should be no Staked Convex LP as all should have been withdrawn into Convex LP and unwrapped");
+        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should have been withdrawan into 3CRV LP and unwrapped");
+        assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be unwrapped into underlying assets");
+
+        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+        assert.notEqual(actualContractBalDAI, 0, "There should exist DAI from withdrawal");
+        assert.notEqual(actualContractBalUSDC, 0, "There should exist USDC from withdrawal");
+        assert.notEqual(actualContractBalUSDT,0, "There should exist USDT from withdrawal");
+    });
+
+    it("withdrawsPartialFromConvexAndUnwrapsToUnderlying", async () => {
+        const initialStakedConvexLPBal = await LENDING_CONTRACT.getStakedConvexLPBalance();
+        const amountToWithdraw = web3.utils.toBN(initialStakedConvexLPBal).div(web3.utils.toBN(2))
+        const expectedStakedConvexLPBalRemaining = initialStakedConvexLPBal - amountToWithdraw;
+
+        await LENDING_CONTRACT.oneShotWithdraw(amountToWithdraw);
+
+        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+        assert.equal(actualStakedConvexLPBalance, expectedStakedConvexLPBalRemaining, `There should be ${expectedStakedConvexLPBalRemaining} Staked Convex LP as only half should have been withdrawn into Convex LP and unwrapped`);
         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should have been withdrawan into 3CRV LP and unwrapped");
         assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be unwrapped into underlying assets");
 
