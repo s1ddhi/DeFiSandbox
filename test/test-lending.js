@@ -329,25 +329,29 @@ contract("TestCurveOneShotLending", (accounts) => {
     });
 
     it("lendsPartialToCurveAndStakesToConvex", async () => {
-        const initial3CRVLPBal = await LENDING_CONTRACT.get3CRVLPBalance();
-        const amountToDeposit = web3.utils.toBN(initial3CRVLPBal).div(web3.utils.toBN(2))
-        const expected3CRVLPBalRemaining = initial3CRVLPBal - amountToDeposit;
+        const initialContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        const initialContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        const initialContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
 
-        await LENDING_CONTRACT.oneShotLend(amountToDeposit);
+        const toLendContractBalDAI = web3.utils.toBN(initialContractBalDAI).div(web3.utils.toBN(2));
+        const toLendContractBalUSDC = web3.utils.toBN(initialContractBalUSDC).div(web3.utils.toBN(2));
+        const toLendContractBalUSDT = web3.utils.toBN(initialContractBalUSDT).div(web3.utils.toBN(2));
 
-        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
-        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
-        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+        await LENDING_CONTRACT.oneShotLend(toLendContractBalDAI, toLendContractBalUSDC, toLendContractBalUSDT);
 
-        assert.equal(actualContractBalDAI, 0, "All DAI should have been lent out");
-        assert.equal(actualContractBalUSDC, 0, "All USDC should have been lent out");
-        assert.equal(actualContractBalUSDT,0, "All USDT should have been lent out");
+        const actualContractBalDAI =  await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+
+        assert.equal(actualContractBalDAI.toString(), toLendContractBalDAI.toString() ,  "Half of DAI should have been lent out");
+        assert.equal(actualContractBalUSDC.toString(), toLendContractBalUSDC.toString(), "Half of USDC should have been lent out");
+        assert.equal(actualContractBalUSDT.toString(), toLendContractBalUSDT.toString(), "Half of USDT should have been lent out");
 
         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
 
-        assert.equal(actual3CRVLPBalance, expected3CRVLPBalRemaining, `There should be ${expected3CRVLPBalRemaining} 3CRV LP as only half should be deposited and staked into Convex`);
+        assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be deposited and staked into Convex");
         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should be staked");
         assert.notEqual(actualStakedConvexLPBalance, 0, "There should be Convex LP staked");
     });

@@ -193,6 +193,12 @@ contract CurveLending {
         convexDeposit(CRV3LPBal, true);
     }
 
+    function oneShotLend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public {
+        lend(daiAmount, usdcAmount, usdtAmount);
+        uint256 CRV3LPBal = get3CRVLPBalance();
+        convexDeposit(CRV3LPBal, true);
+    }
+
     function oneShotWithdrawAll() public {
         uint256 stakedBal = getStakedConvexLPBalance();
         convexUnstake(stakedBal);
