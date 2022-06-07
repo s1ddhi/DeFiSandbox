@@ -20,38 +20,38 @@ const USDT_DECIMAL = 6;
 
 const ERC20_DECIMAL = 18;
 
-contract("TestCurveLendingSingleAsset", (accounts) => {
-    beforeEach(async () => {
-        DAI_CONTRACT = await IERC20.at(DAI);
-        USDC_CONTRACT = await IERC20.at(USDC);
-        USDT_CONTRACT = await IERC20.at(USDT);
-        LENDING_CONTRACT = await LENDING.new();
+// contract("TestCurveLendingSingleAsset", (accounts) => {
+//     beforeEach(async () => {
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         USDC_CONTRACT = await IERC20.at(USDC);
+//         USDT_CONTRACT = await IERC20.at(USDT);
+//         LENDING_CONTRACT = await LENDING.new();
 
-        await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+//         await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
-        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(actualContractBalDAI, 0, "[Setup fault] There is DAI in contract where there should not.");
-        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(actualContractBalUSDC, 0, "[Setup fault] There is USDC in contract where there should not.");
-        const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(actualContractBalUSDT, 0, "[Setup fault] There is no USDC in contract where there should be.");
-        const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.equal(actualContractLPBalance, 0, "[Setup fault] There is already LP tokens where there should not.");
-    });
+//         const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.equal(actualContractBalDAI, 0, "[Setup fault] There is DAI in contract where there should not.");
+//         const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.equal(actualContractBalUSDC, 0, "[Setup fault] There is USDC in contract where there should not.");
+//         const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.notEqual(actualContractBalUSDT, 0, "[Setup fault] There is no USDC in contract where there should be.");
+//         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         assert.equal(actualContractLPBalance, 0, "[Setup fault] There is already LP tokens where there should not.");
+//     });
 
-    it("adds specified liquidity of USDT", async () => {
-        const initialContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+//     it("adds specified liquidity of USDT", async () => {
+//         const initialContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
 
-        const usdtToLend = 100;
-        await LENDING_CONTRACT.lend(0, 0, unnormalise(usdtToLend, USDT_DECIMAL));
+//         const usdtToLend = 100;
+//         await LENDING_CONTRACT.lend(0, 0, unnormalise(usdtToLend, USDT_DECIMAL));
 
-        const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDT is all lent.");
-        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
-        const expectedContractBalUSDT = initialContractBalUSDT.sub(web3.utils.toBN(usdtToLend));
-        assert.equal(actualContractBalUSDT.toString(), expectedContractBalUSDT.toString(), "Only " + usdtToLend.toString() + " should have been lent.")
-    });
-});
+//         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDT is all lent.");
+//         const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+//         const expectedContractBalUSDT = initialContractBalUSDT.sub(web3.utils.toBN(usdtToLend));
+//         assert.equal(actualContractBalUSDT.toString(), expectedContractBalUSDT.toString(), "Only " + usdtToLend.toString() + " should have been lent.")
+//     });
+// });
 
 contract("TestCurveLendingMultiAsset", (accounts) => {
     beforeEach(async () => {
@@ -62,382 +62,406 @@ contract("TestCurveLendingMultiAsset", (accounts) => {
 
         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
+        // DAI
         const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         assert.equal(actualContractLPBalance, 0, "[Setup fault] There is already LP tokens where there should not.");
     });
 
-    it("adds all asset liquidity", async () => {
-        await LENDING_CONTRACT.lendAll();
+    // it("adds all asset liquidity", async () => {
+    //     await LENDING_CONTRACT.lendAll();
 
-        const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDC is all lent.");
-    });
+    //     const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+    //     assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDC is all lent.");
+    // });
 
-    it("adds only partial USDT liquidity", async () => {
-        const initialContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+    // it("adds only partial USDT liquidity", async () => {
+    //     const initialContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
 
-        const usdtToLend = 100;
-        await LENDING_CONTRACT.lend(0, 0, unnormalise(usdtToLend, USDT_DECIMAL));
+    //     const usdtToLend = 100;
+    //     await LENDING_CONTRACT.lend(0, 0, unnormalise(usdtToLend, USDT_DECIMAL));
+
+    //     const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+    //     assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDT is all lent.");
+    //     const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+    //     assert.notEqual(actualContractBalDAI, 0, "There should be DAI as none should not be lent.");
+    //     const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+    //     assert.notEqual(actualContractBalUSDC, 0, "There should be USDC as none should not be lent.");
+
+    //     const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+    //     const expectedContractBalUSDT = initialContractBalUSDT.sub(web3.utils.toBN(usdtToLend));
+    //     assert.equal(actualContractBalUSDT.toString(), expectedContractBalUSDT.toString(), "Only " + usdtToLend.toString() + " should have been lent.")
+    // });
+
+    it("adds entire DAI liquidity", async () => {
+        const initialContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+        const actualBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+
+        await debugDisplayAll(accounts[0]);
+
+        const daiToLend = 100;
+        await LENDING_CONTRACT.lend(actualBalDAI, 0, 0);
+
+        await debugDisplayAll(accounts[0]);
 
         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         assert.notEqual(actualContractLPBalance, 0, "There is no LP tokens where there should be as USDT is all lent.");
-        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(actualContractBalDAI, 0, "There should be DAI as none should not be lent.");
         const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.notEqual(actualContractBalUSDC, 0, "There should be USDC as none should not be lent.");
-
-        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
-        const expectedContractBalUSDT = initialContractBalUSDT.sub(web3.utils.toBN(usdtToLend));
-        assert.equal(actualContractBalUSDT.toString(), expectedContractBalUSDT.toString(), "Only " + usdtToLend.toString() + " should have been lent.")
-    });
-});
-
-
-contract("TestCurveLendingWithdrawalSingleAsset", (accounts) => {
-    beforeEach(async () => {
-        USDT_CONTRACT = await IERC20.at(USDT);
-        USDC_CONTRACT = await IERC20.at(USDC);
-        DAI_CONTRACT = await IERC20.at(DAI);
-        LENDING_CONTRACT = await LENDING.new();
-
-        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
-
-        await LENDING_CONTRACT.lendAll();
-
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(contractBalUSDC, 0, "[Setup fault] There should not be USDC in contract where there is.");
-        const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.notEqual(actualContractLPBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
-    });
-
-    it("withdraws only USDC liquidity", async () => {
-        await LENDING_CONTRACT.withdrawAllLP(USDC_INDEX);
-
-        const finalLPBalance = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
-        assert.equal(finalLPBalance, 0, "There should not be LP tokens where there is as all should be converted to USDC.");
-        const contractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(contractBalDAI, 0, "There should be no DAI from withdrawing assets associated with LP tokens.");
-        const contractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(contractBalUSDT, 0, "There should be no USDT from withdrawing assets associated with LP tokens.");
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
-    });
-
-    it("withdraws only partial USDC liquidity", async () => {
-        const initialLPBalance = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
-        const lpToWithdraw = initialLPBalance.div(web3.utils.toBN(2));
-
-        await LENDING_CONTRACT.withdrawLP(USDC_INDEX, lpToWithdraw);
-
-        const finalLPBalance = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
-        assert.ok(finalLPBalance.eq(initialLPBalance.sub(lpToWithdraw)), "There should remain " + initialLPBalance.sub(lpToWithdraw).toString() + " LP tokens.");        const contractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(contractBalDAI, 0, "There should be no DAI from withdrawing assets associated with LP tokens.");
-        const contractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(contractBalUSDT, 0, "There should be no USDT from withdrawing assets associated with LP tokens.");
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
-    });
-});
-
-contract("TestCurveLendingWithdrawalMultiAsset", (accounts) => {
-    beforeEach(async () => {
-        USDT_CONTRACT = await IERC20.at(USDT);
-        USDC_CONTRACT = await IERC20.at(USDC);
-        DAI_CONTRACT = await IERC20.at(DAI);
-        LENDING_CONTRACT = await LENDING.new();
-
-        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
-
-        await LENDING_CONTRACT.lendAll();
-
-        const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.equal(contractBalUSDC, 0, "[Setup fault] There should not be USDC in contract where there is.");
-        const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.notEqual(actualContractLPBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
-    });
-
-    it("withdraws all liquidity of all assets", async () => {
-        await LENDING_CONTRACT.withdrawAllLP(-1);
-
-        lpBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.equal(lpBalance, 0, "There should not be LP tokens where there is as all should be converted to USDC.");
-        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(actualContractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
-    });
-
-    it("withdraws partial liquidity of all assets", async () => {
-        const initialLPBalance = normalise(web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance()), ERC20_DECIMAL);
-        const lpToWithdraw = initialLPBalance.div(web3.utils.toBN(2));
-
-        await LENDING_CONTRACT.withdrawLP(-1, unnormalise(lpToWithdraw, ERC20_DECIMAL));
-
-        const actualContractLPBalance = normalise(web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance()), ERC20_DECIMAL);
-        const expectedContractLPBalance = initialLPBalance.sub(lpToWithdraw);
-        assert.equal(actualContractLPBalance.toString(), expectedContractLPBalance.toString(), "There should remain " + initialLPBalance.sub(lpToWithdraw).toString() + " LP tokens.");
-
-        const actualContractBalDAI = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(actualContractBalDAI, 0, "There should be DAI from withdrawing assets associated with LP tokens.");
-        const actualContractBalUSDT = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(actualContractBalUSDT, 0, "There should be USDT from withdrawing assets associated with LP tokens.");
-        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        assert.notEqual(actualContractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
-    });
-});
-
-contract("TestConvexStakingDeposit", (accounts) => {
-    beforeEach(async () => {
-        DAI_CONTRACT = await IERC20.at(DAI);
-        USDC_CONTRACT = await IERC20.at(USDC);
-        USDT_CONTRACT = await IERC20.at(USDT);
-        LENDING_CONTRACT = await LENDING.new();
-
-        await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
-
-        await LENDING_CONTRACT.lendAll();
-
-        const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.notEqual(actualContractLPBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
-    });
-
-    it("lends all 3CRV LP tokens but does not stake", async () => {
-        const crvLPBal = await LENDING_CONTRACT.get3CRVLPBalance();
-        await LENDING_CONTRACT.convexDeposit(crvLPBal, false);
-
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
-        assert.notEqual(actualConvexLPBalance, 0, "There should Convex LP tokens as 3CRV LP has been deposited.");
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-        assert.equal(actualStakedConvexLPBalance, 0, "There should be no staked Convex LP tokens.");
-    });
-
-    it("lends all 3CRV LP tokens and stakes all", async () => {
-        const crvLPBal = await LENDING_CONTRACT.get3CRVLPBalance();
-        await LENDING_CONTRACT.convexDeposit(crvLPBal, true);
-
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
-        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP tokens as all should have been staked.");
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-        assert.equal(actualStakedConvexLPBalance.toString(), crvLPBal.toString(), "All 3CRV LP should be staked.");
-    });
-
-    it("lends partial 3CRV LP tokens and stakes all", async () => {
-        const intialCRVLPBal = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
-        const toStakeCRVLPBal = web3.utils.toBN(intialCRVLPBal.div(web3.utils.toBN(2)));
-        await LENDING_CONTRACT.convexDeposit(toStakeCRVLPBal, true);
-
-        const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.notEqual(actualContractLPBalance, intialCRVLPBal.sub(toStakeCRVLPBal), "[Setup fault] There is no LP tokens where there should be.");
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
-        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP tokens as all should have been staked.");
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-        assert.equal(actualStakedConvexLPBalance.toString(), toStakeCRVLPBal.toString(), normalise(toStakeCRVLPBal, ERC20_DECIMAL).toString() + " of 3CRV LP should be staked but actual is " + normalise(actualStakedConvexLPBalance, ERC20_DECIMAL).toString() + ".");
-    })
-});
-
-contract("TestConvexStakingWithdraw", (accounts) => {
-    let snapshotId;
-
-    beforeEach(async () => {
-        DAI_CONTRACT = await IERC20.at(DAI);
-        USDC_CONTRACT = await IERC20.at(USDC);
-        USDT_CONTRACT = await IERC20.at(USDT);
-        LENDING_CONTRACT = await LENDING.new();
-
-        await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
-
-        await LENDING_CONTRACT.lendAll();
-
-        const crvLPBal = await LENDING_CONTRACT.get3CRVLPBalance();
-        await LENDING_CONTRACT.convexDeposit(crvLPBal, true);
-
-        const actualContractStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-        assert.notEqual(actualContractStakedConvexLPBalance, 0, "[Setup fault] There is no staked Convex LP tokens where there should be.");
-
-        const snapshot = await timeMachine.takeSnapshot();
-        snapshotId = snapshot['result'];
-        await advanceTime();
-
-        const currentRewardsBal = await LENDING_CONTRACT.getClaimableRewards();
-        assert.notEqual(currentRewardsBal, 0, "[Setup fault] Time has elapsed so there should be claimable rewards.")
-    });
-
-    afterEach(async () => {
-        await timeMachine.revertToSnapshot(snapshotId);
-    });
-
-
-    it("unstakes and withdraws all convex LP into 3CRV LP", async () => {
-        const stakedConvexLPBal = await LENDING_CONTRACT.getStakedConvexLPBalance();
-
-        await LENDING_CONTRACT.convexUnstake(stakedConvexLPBal);
-        await LENDING_CONTRACT.convexWithdraw(stakedConvexLPBal);
-
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        assert.notEqual(actual3CRVLPBalance, stakedConvexLPBal, "There should be " + stakedConvexLPBal.toString() + " 3CRV.");
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
-        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP balance as all should be 3CRV LP tokens.")
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-        assert.equal(actualStakedConvexLPBalance, 0, "There should be no staked Convex LP balance as all should be 3CRV LP tokens.")
-    });
-
-    it("claimEarnedRewards", async () => {
-        const actualCurrentRewardsBal = await LENDING_CONTRACT.getClaimableRewards();
-        await LENDING_CONTRACT.claimRewards();
-
-        const actualCRVbal = await LENDING_CONTRACT.getCRVBalance();
-        assert.equal(actualCurrentRewardsBal.toString(), actualCRVbal.toString(), "All CRV should have been claimed.")
-    });
-})
-
-contract("TestCurveOneShotLending", (accounts) => {
-    beforeEach(async () => {
-        USDT_CONTRACT = await IERC20.at(USDT);
-        USDC_CONTRACT = await IERC20.at(USDC);
-        DAI_CONTRACT = await IERC20.at(DAI);
-        LENDING_CONTRACT = await LENDING.new();
-
-        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
-
-        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
-        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
-        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
-
-        assert.notEqual(actualContractBalDAI, 0, "[Setup fault] There should exist DAI to lend");
-        assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There should exist USDC to lend");
-        assert.notEqual(actualContractBalUSDT,0, "[Setup fault] There should exist USDT to lend");
-    });
-
-    it("lendsToCurveAndStakesToConvex", async () => {
-        await LENDING_CONTRACT.oneShotLendAll();
-
-        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
-        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
-        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
-
-        assert.equal(actualContractBalDAI, 0, "All DAI should have been lent out");
-        assert.equal(actualContractBalUSDC, 0, "All USDC should have been lent out");
-        assert.equal(actualContractBalUSDT,0, "All USDT should have been lent out");
-
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-
-        assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be deposited and staked into Convex");
-        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should be staked");
-        assert.notEqual(actualStakedConvexLPBalance, 0, "There should be Convex LP staked");
-    });
-
-    it("lendsPartialToCurveAndStakesToConvex", async () => {
-        const initialContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        const initialContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        const initialContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-
-        const toLendContractBalDAI = web3.utils.toBN(initialContractBalDAI).div(web3.utils.toBN(2));
-        const toLendContractBalUSDC = web3.utils.toBN(initialContractBalUSDC).div(web3.utils.toBN(2));
-        const toLendContractBalUSDT = web3.utils.toBN(initialContractBalUSDT).div(web3.utils.toBN(2));
-
-        await LENDING_CONTRACT.oneShotLend(toLendContractBalDAI, toLendContractBalUSDC, toLendContractBalUSDT);
-
-        const actualContractBalDAI =  await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
-
-        assert.equal(actualContractBalDAI.toString(), toLendContractBalDAI.toString() ,  "Half of DAI should have been lent out");
-        assert.equal(actualContractBalUSDC.toString(), toLendContractBalUSDC.toString(), "Half of USDC should have been lent out");
-        assert.equal(actualContractBalUSDT.toString(), toLendContractBalUSDT.toString(), "Half of USDT should have been lent out");
-
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-
-        assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be deposited and staked into Convex");
-        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should be staked");
-        assert.notEqual(actualStakedConvexLPBalance, 0, "There should be Convex LP staked");
-    });
-});
-
-contract("TestCurveOneShotWithdrawal", (accounts) => {
-    beforeEach(async () => {
-        USDT_CONTRACT = await IERC20.at(USDT);
-        USDC_CONTRACT = await IERC20.at(USDC);
-        DAI_CONTRACT = await IERC20.at(DAI);
-        LENDING_CONTRACT = await LENDING.new();
-
-        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
-
-        await LENDING_CONTRACT.oneShotLendAll();
-
-        const snapshot = await timeMachine.takeSnapshot();
-        snapshotId = snapshot['result'];
-        await advanceTime();
-
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-        assert.notEqual(actualStakedConvexLPBalance, 0, "[Setup fault] There should be staked Convex LP to withdraw");
-    });
-
-    afterEach(async () => {
-        await timeMachine.revertToSnapshot(snapshotId);
-    });
-
-    it("withdrawsFromConvexAndUnwrapsToUnderlying", async () => {
-        await LENDING_CONTRACT.oneShotWithdrawAll();
-
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-
-        assert.equal(actualStakedConvexLPBalance, 0, "There should be no Staked Convex LP as all should have been withdrawn into Convex LP and unwrapped");
-        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should have been withdrawan into 3CRV LP and unwrapped");
-        assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be unwrapped into underlying assets");
+        assert.notEqual(actualContractBalUSDT, 0, "There should be USDT as none should not be lent.");
 
         const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
-        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
-        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
-
-        assert.notEqual(actualContractBalDAI, 0, "There should exist DAI from withdrawal");
-        assert.notEqual(actualContractBalUSDC, 0, "There should exist USDC from withdrawal");
-        assert.notEqual(actualContractBalUSDT,0, "There should exist USDT from withdrawal");
-    });
-
-    it("withdrawsPartialFromConvexAndUnwrapsToUnderlying", async () => {
-        const initialStakedConvexLPBal = await LENDING_CONTRACT.getStakedConvexLPBalance();
-        const amountToWithdraw = web3.utils.toBN(initialStakedConvexLPBal).div(web3.utils.toBN(2))
-        const expectedStakedConvexLPBalRemaining = initialStakedConvexLPBal - amountToWithdraw;
-
-        await LENDING_CONTRACT.oneShotWithdraw(amountToWithdraw);
-
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
-        const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
-
-        assert.equal(actualStakedConvexLPBalance, expectedStakedConvexLPBalRemaining, `There should be ${expectedStakedConvexLPBalRemaining} Staked Convex LP as only half should have been withdrawn into Convex LP and unwrapped`);
-        assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should have been withdrawan into 3CRV LP and unwrapped");
-        assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be unwrapped into underlying assets");
-
-        const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
-        const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
-        const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
-
-        assert.notEqual(actualContractBalDAI, 0, "There should exist DAI from withdrawal");
-        assert.notEqual(actualContractBalUSDC, 0, "There should exist USDC from withdrawal");
-        assert.notEqual(actualContractBalUSDT,0, "There should exist USDT from withdrawal");
+        const expectedContractBalDAI = initialContractBalDAI.sub(web3.utils.toBN(daiToLend));
+        //assert.equal(actualContractBalDAI.toString(), expectedContractBalDAI.toString(), "Only " + daiToLend.toString() + " should have been lent.")
     });
 });
 
-contract("TestCurveGauge", (accounts) => {
-    it("getsGaugeBalance", async () => {
-        LENDING_CONTRACT = await LENDING.new();
-        const bal = await LENDING_CONTRACT.getGaugeBalance.call();
-        console.log(bal.toString());
-    });
-});
 
-contract("AdvanceTime", (accounts) => {
-    it("advancesTimeByOneMonth", async () => {
-        await advanceTime();
-    });
-});
+// contract("TestCurveLendingWithdrawalSingleAsset", (accounts) => {
+//     beforeEach(async () => {
+//         USDT_CONTRACT = await IERC20.at(USDT);
+//         USDC_CONTRACT = await IERC20.at(USDC);
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         LENDING_CONTRACT = await LENDING.new();
+
+//         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+//         await LENDING_CONTRACT.lendAll();
+
+//         const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.equal(contractBalUSDC, 0, "[Setup fault] There should not be USDC in contract where there is.");
+//         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         assert.notEqual(actualContractLPBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
+//     });
+
+//     it("withdraws only USDC liquidity", async () => {
+//         await LENDING_CONTRACT.withdrawAllLP(USDC_INDEX);
+
+//         const finalLPBalance = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
+//         assert.equal(finalLPBalance, 0, "There should not be LP tokens where there is as all should be converted to USDC.");
+//         const contractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.equal(contractBalDAI, 0, "There should be no DAI from withdrawing assets associated with LP tokens.");
+//         const contractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.equal(contractBalUSDT, 0, "There should be no USDT from withdrawing assets associated with LP tokens.");
+//         const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+//     });
+
+//     it("withdraws only partial USDC liquidity", async () => {
+//         const initialLPBalance = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
+//         const lpToWithdraw = initialLPBalance.div(web3.utils.toBN(2));
+
+//         await LENDING_CONTRACT.withdrawLP(USDC_INDEX, lpToWithdraw);
+
+//         const finalLPBalance = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
+//         assert.ok(finalLPBalance.eq(initialLPBalance.sub(lpToWithdraw)), "There should remain " + initialLPBalance.sub(lpToWithdraw).toString() + " LP tokens.");        const contractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.equal(contractBalDAI, 0, "There should be no DAI from withdrawing assets associated with LP tokens.");
+//         const contractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.equal(contractBalUSDT, 0, "There should be no USDT from withdrawing assets associated with LP tokens.");
+//         const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.notEqual(contractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+//     });
+// });
+
+// contract("TestCurveLendingWithdrawalMultiAsset", (accounts) => {
+//     beforeEach(async () => {
+//         USDT_CONTRACT = await IERC20.at(USDT);
+//         USDC_CONTRACT = await IERC20.at(USDC);
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         LENDING_CONTRACT = await LENDING.new();
+
+//         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+//         await LENDING_CONTRACT.lendAll();
+
+//         const contractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.equal(contractBalUSDC, 0, "[Setup fault] There should not be USDC in contract where there is.");
+//         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         assert.notEqual(actualContractLPBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
+//     });
+
+//     it("withdraws all liquidity of all assets", async () => {
+//         await LENDING_CONTRACT.withdrawAllLP(-1);
+
+//         lpBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         assert.equal(lpBalance, 0, "There should not be LP tokens where there is as all should be converted to USDC.");
+//         const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.notEqual(actualContractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+//     });
+
+//     it("withdraws partial liquidity of all assets", async () => {
+//         const initialLPBalance = normalise(web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance()), ERC20_DECIMAL);
+//         const lpToWithdraw = initialLPBalance.div(web3.utils.toBN(2));
+
+//         await LENDING_CONTRACT.withdrawLP(-1, unnormalise(lpToWithdraw, ERC20_DECIMAL));
+
+//         const actualContractLPBalance = normalise(web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance()), ERC20_DECIMAL);
+//         const expectedContractLPBalance = initialLPBalance.sub(lpToWithdraw);
+//         assert.equal(actualContractLPBalance.toString(), expectedContractLPBalance.toString(), "There should remain " + initialLPBalance.sub(lpToWithdraw).toString() + " LP tokens.");
+
+//         const actualContractBalDAI = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.notEqual(actualContractBalDAI, 0, "There should be DAI from withdrawing assets associated with LP tokens.");
+//         const actualContractBalUSDT = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.notEqual(actualContractBalUSDT, 0, "There should be USDT from withdrawing assets associated with LP tokens.");
+//         const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         assert.notEqual(actualContractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+//     });
+// });
+
+// contract("TestConvexStakingDeposit", (accounts) => {
+//     beforeEach(async () => {
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         USDC_CONTRACT = await IERC20.at(USDC);
+//         USDT_CONTRACT = await IERC20.at(USDT);
+//         LENDING_CONTRACT = await LENDING.new();
+
+//         await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+//         await LENDING_CONTRACT.lendAll();
+
+//         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         assert.notEqual(actualContractLPBalance, 0, "[Setup fault] There is no LP tokens where there should be.");
+//     });
+
+//     it("lends all 3CRV LP tokens but does not stake", async () => {
+//         const crvLPBal = await LENDING_CONTRACT.get3CRVLPBalance();
+//         await LENDING_CONTRACT.convexDeposit(crvLPBal, false);
+
+//         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+//         assert.notEqual(actualConvexLPBalance, 0, "There should Convex LP tokens as 3CRV LP has been deposited.");
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+//         assert.equal(actualStakedConvexLPBalance, 0, "There should be no staked Convex LP tokens.");
+//     });
+
+//     it("lends all 3CRV LP tokens and stakes all", async () => {
+//         const crvLPBal = await LENDING_CONTRACT.get3CRVLPBalance();
+//         await LENDING_CONTRACT.convexDeposit(crvLPBal, true);
+
+//         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+//         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP tokens as all should have been staked.");
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+//         assert.equal(actualStakedConvexLPBalance.toString(), crvLPBal.toString(), "All 3CRV LP should be staked.");
+//     });
+
+//     it("lends partial 3CRV LP tokens and stakes all", async () => {
+//         const intialCRVLPBal = web3.utils.toBN(await LENDING_CONTRACT.get3CRVLPBalance());
+//         const toStakeCRVLPBal = web3.utils.toBN(intialCRVLPBal.div(web3.utils.toBN(2)));
+//         await LENDING_CONTRACT.convexDeposit(toStakeCRVLPBal, true);
+
+//         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         assert.notEqual(actualContractLPBalance, intialCRVLPBal.sub(toStakeCRVLPBal), "[Setup fault] There is no LP tokens where there should be.");
+//         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+//         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP tokens as all should have been staked.");
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+//         assert.equal(actualStakedConvexLPBalance.toString(), toStakeCRVLPBal.toString(), normalise(toStakeCRVLPBal, ERC20_DECIMAL).toString() + " of 3CRV LP should be staked but actual is " + normalise(actualStakedConvexLPBalance, ERC20_DECIMAL).toString() + ".");
+//     })
+// });
+
+// contract("TestConvexStakingWithdraw", (accounts) => {
+//     let snapshotId;
+
+//     beforeEach(async () => {
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         USDC_CONTRACT = await IERC20.at(USDC);
+//         USDT_CONTRACT = await IERC20.at(USDT);
+//         LENDING_CONTRACT = await LENDING.new();
+
+//         await setupSingle(accounts[0], LENDING_CONTRACT.address, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+//         await LENDING_CONTRACT.lendAll();
+
+//         const crvLPBal = await LENDING_CONTRACT.get3CRVLPBalance();
+//         await LENDING_CONTRACT.convexDeposit(crvLPBal, true);
+
+//         const actualContractStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+//         assert.notEqual(actualContractStakedConvexLPBalance, 0, "[Setup fault] There is no staked Convex LP tokens where there should be.");
+
+//         const snapshot = await timeMachine.takeSnapshot();
+//         snapshotId = snapshot['result'];
+//         await advanceTime();
+
+//         const currentRewardsBal = await LENDING_CONTRACT.getClaimableRewards();
+//         assert.notEqual(currentRewardsBal, 0, "[Setup fault] Time has elapsed so there should be claimable rewards.")
+//     });
+
+//     afterEach(async () => {
+//         await timeMachine.revertToSnapshot(snapshotId);
+//     });
+
+
+//     it("unstakes and withdraws all convex LP into 3CRV LP", async () => {
+//         const stakedConvexLPBal = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+//         await LENDING_CONTRACT.convexUnstake(stakedConvexLPBal);
+//         await LENDING_CONTRACT.convexWithdraw(stakedConvexLPBal);
+
+//         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         assert.notEqual(actual3CRVLPBalance, stakedConvexLPBal, "There should be " + stakedConvexLPBal.toString() + " 3CRV.");
+//         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+//         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP balance as all should be 3CRV LP tokens.")
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+//         assert.equal(actualStakedConvexLPBalance, 0, "There should be no staked Convex LP balance as all should be 3CRV LP tokens.")
+//     });
+
+//     it("claimEarnedRewards", async () => {
+//         const actualCurrentRewardsBal = await LENDING_CONTRACT.getClaimableRewards();
+//         await LENDING_CONTRACT.claimRewards();
+
+//         const actualCRVbal = await LENDING_CONTRACT.getCRVBalance();
+//         assert.equal(actualCurrentRewardsBal.toString(), actualCRVbal.toString(), "All CRV should have been claimed.")
+//     });
+// })
+
+// contract("TestCurveOneShotLending", (accounts) => {
+//     beforeEach(async () => {
+//         USDT_CONTRACT = await IERC20.at(USDT);
+//         USDC_CONTRACT = await IERC20.at(USDC);
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         LENDING_CONTRACT = await LENDING.new();
+
+//         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+//         const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+//         const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+//         const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+//         assert.notEqual(actualContractBalDAI, 0, "[Setup fault] There should exist DAI to lend");
+//         assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There should exist USDC to lend");
+//         assert.notEqual(actualContractBalUSDT,0, "[Setup fault] There should exist USDT to lend");
+//     });
+
+//     it("lendsToCurveAndStakesToConvex", async () => {
+//         await LENDING_CONTRACT.oneShotLendAll();
+
+//         const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+//         const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+//         const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+//         assert.equal(actualContractBalDAI, 0, "All DAI should have been lent out");
+//         assert.equal(actualContractBalUSDC, 0, "All USDC should have been lent out");
+//         assert.equal(actualContractBalUSDT,0, "All USDT should have been lent out");
+
+//         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+//         assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be deposited and staked into Convex");
+//         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should be staked");
+//         assert.notEqual(actualStakedConvexLPBalance, 0, "There should be Convex LP staked");
+//     });
+
+//     it("lendsPartialToCurveAndStakesToConvex", async () => {
+//         const initialContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         const initialContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         const initialContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+
+//         const toLendContractBalDAI = web3.utils.toBN(initialContractBalDAI).div(web3.utils.toBN(2));
+//         const toLendContractBalUSDC = web3.utils.toBN(initialContractBalUSDC).div(web3.utils.toBN(2));
+//         const toLendContractBalUSDT = web3.utils.toBN(initialContractBalUSDT).div(web3.utils.toBN(2));
+
+//         await LENDING_CONTRACT.oneShotLend(toLendContractBalDAI, toLendContractBalUSDC, toLendContractBalUSDT);
+
+//         const actualContractBalDAI =  await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+//         const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+
+//         assert.equal(actualContractBalDAI.toString(), toLendContractBalDAI.toString() ,  "Half of DAI should have been lent out");
+//         assert.equal(actualContractBalUSDC.toString(), toLendContractBalUSDC.toString(), "Half of USDC should have been lent out");
+//         assert.equal(actualContractBalUSDT.toString(), toLendContractBalUSDT.toString(), "Half of USDT should have been lent out");
+
+//         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+//         assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be deposited and staked into Convex");
+//         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should be staked");
+//         assert.notEqual(actualStakedConvexLPBalance, 0, "There should be Convex LP staked");
+//     });
+// });
+
+// contract("TestCurveOneShotWithdrawal", (accounts) => {
+//     beforeEach(async () => {
+//         USDT_CONTRACT = await IERC20.at(USDT);
+//         USDC_CONTRACT = await IERC20.at(USDC);
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         LENDING_CONTRACT = await LENDING.new();
+
+//         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+//         await LENDING_CONTRACT.oneShotLendAll();
+
+//         const snapshot = await timeMachine.takeSnapshot();
+//         snapshotId = snapshot['result'];
+//         await advanceTime();
+
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+//         assert.notEqual(actualStakedConvexLPBalance, 0, "[Setup fault] There should be staked Convex LP to withdraw");
+//     });
+
+//     afterEach(async () => {
+//         await timeMachine.revertToSnapshot(snapshotId);
+//     });
+
+//     it("withdrawsFromConvexAndUnwrapsToUnderlying", async () => {
+//         await LENDING_CONTRACT.oneShotWithdrawAll();
+
+//         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+//         assert.equal(actualStakedConvexLPBalance, 0, "There should be no Staked Convex LP as all should have been withdrawn into Convex LP and unwrapped");
+//         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should have been withdrawan into 3CRV LP and unwrapped");
+//         assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be unwrapped into underlying assets");
+
+//         const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+//         const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+//         const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+//         assert.notEqual(actualContractBalDAI, 0, "There should exist DAI from withdrawal");
+//         assert.notEqual(actualContractBalUSDC, 0, "There should exist USDC from withdrawal");
+//         assert.notEqual(actualContractBalUSDT,0, "There should exist USDT from withdrawal");
+//     });
+
+//     it("withdrawsPartialFromConvexAndUnwrapsToUnderlying", async () => {
+//         const initialStakedConvexLPBal = await LENDING_CONTRACT.getStakedConvexLPBalance();
+//         const amountToWithdraw = web3.utils.toBN(initialStakedConvexLPBal).div(web3.utils.toBN(2))
+//         const expectedStakedConvexLPBalRemaining = initialStakedConvexLPBal - amountToWithdraw;
+
+//         await LENDING_CONTRACT.oneShotWithdraw(amountToWithdraw);
+
+//         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+//         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+//         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
+
+//         assert.equal(actualStakedConvexLPBalance, expectedStakedConvexLPBalRemaining, `There should be ${expectedStakedConvexLPBalRemaining} Staked Convex LP as only half should have been withdrawn into Convex LP and unwrapped`);
+//         assert.equal(actualConvexLPBalance, 0, "There should be no Convex LP as all should have been withdrawan into 3CRV LP and unwrapped");
+//         assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be unwrapped into underlying assets");
+
+//         const actualContractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+//         const actualContractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+//         const actualContractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+
+//         assert.notEqual(actualContractBalDAI, 0, "There should exist DAI from withdrawal");
+//         assert.notEqual(actualContractBalUSDC, 0, "There should exist USDC from withdrawal");
+//         assert.notEqual(actualContractBalUSDT,0, "There should exist USDT from withdrawal");
+//     });
+// });
+
+// contract("TestCurveGauge", (accounts) => {
+//     it("getsGaugeBalance", async () => {
+//         LENDING_CONTRACT = await LENDING.new();
+//         const bal = await LENDING_CONTRACT.getGaugeBalance.call();
+//         console.log(bal.toString());
+//     });
+// });
+
+// contract("AdvanceTime", (accounts) => {
+//     it("advancesTimeByOneMonth", async () => {
+//         await advanceTime();
+//     });
+// });
 
 const debugDisplayAll = async (account) => {
     const currentBlockNumber = await web3.eth.getBlockNumber();
