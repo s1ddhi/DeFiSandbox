@@ -33,6 +33,6 @@ contract CurveExchange {
         IERC20 toToken = token[uint128(toTokenIndex)];
         uint256 balTo = toToken.balanceOf(address(this));
 
-        toToken.safeTransfer(msg.sender, balTo);
+        //toToken.safeTransfer(msg.sender, balTo);
     }
 }

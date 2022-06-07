@@ -37,11 +37,16 @@ contract("TestExchange", (accounts) => {
         await displayAll(accounts);
     })
 
-    it("swaps all USDC for USDT", async() => {
-        await EXCHANGE_CONTRACT.swapAll(USDC_INDEX, USDT_INDEX);
-        console.log("FINAL")
-        await displayAll(accounts)
-    })
+    // it("swaps all USDC for USDT", async() => {
+    //     await EXCHANGE_CONTRACT.swapAll(USDC_INDEX, USDT_INDEX);
+    // })
+
+    it("constantly swaps", async () => {
+        for (let i = 0; i < 100; i++) {
+            await EXCHANGE_CONTRACT.swapAll(USDC_INDEX, USDT_INDEX);
+            await EXCHANGE_CONTRACT.swapAll(USDT_INDEX, USDC_INDEX);
+        }
+    });
 })
 
 displayAll = async (accounts) => {

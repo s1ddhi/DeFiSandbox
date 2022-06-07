@@ -33,7 +33,7 @@ interface TokenSwap {
   function exchange(uint256 i, uint256 j, uint256 dx, uint256 min_dy, bool use_eth) external payable returns(uint256);
 }
 
-interface ICurve3Pool {
+interface ICurve3PoolLending {
    function add_liquidity(uint256[3] calldata amounts, uint256 min_mint_amount) external;
    function remove_liquidity(uint256 _amount, uint256[3] calldata min_amounts) external;
    function remove_liquidity_one_coin(uint256 _token_amount, int128 i, uint256 min_amount) external;
@@ -100,7 +100,7 @@ contract SwapGovernance {
     IERC20[3] token = [DAI, USDC, USDT];
 
     address constant private CURVE3POOL_ADDRESS = 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7;
-    ICurve3Pool constant private CURVE3POOL = ICurve3Pool(CURVE3POOL_ADDRESS);
+    ICurve3PoolLending constant private CURVE3POOL = ICurve3PoolLending(CURVE3POOL_ADDRESS);
 
     function lend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public {
         uint256[3] memory balance = [daiAmount, usdcAmount, usdtAmount];
