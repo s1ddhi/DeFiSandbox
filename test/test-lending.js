@@ -2,6 +2,7 @@ const timeMachine = require('ganache-time-traveler');
 
 const IERC20 = artifacts.require("IERC20");
 const LENDING = artifacts.require("CurveLending");
+const EXCHANGE = artifacts.require("CurveExchange")
 
 const DAI_WHALE = "0x28c6c06298d514db089934071355e5743bf21d60";
 const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
@@ -364,14 +365,16 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
         USDC_CONTRACT = await IERC20.at(USDC);
         DAI_CONTRACT = await IERC20.at(DAI);
         LENDING_CONTRACT = await LENDING.new();
+        EXCHANGE_CONTRACT = await EXCHANGE.new();
 
         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+        await debugDisplayAll(accounts[0]);
 
         await LENDING_CONTRACT.oneShotLendAll();
 
         const snapshot = await timeMachine.takeSnapshot();
         snapshotId = snapshot['result'];
-        await advanceTime();
 
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
         assert.notEqual(actualStakedConvexLPBalance, 0, "[Setup fault] There should be staked Convex LP to withdraw");
@@ -382,7 +385,11 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
     });
 
     it("withdrawsFromConvexAndUnwrapsToUnderlying", async () => {
+        await advanceTime();
+
         await LENDING_CONTRACT.oneShotWithdrawAll();
+
+        await debugDisplayAll(accounts[0]);
 
         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
@@ -402,11 +409,15 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
     });
 
     it("withdrawsPartialFromConvexAndUnwrapsToUnderlying", async () => {
+        await advanceTime();
+
         const initialStakedConvexLPBal = await LENDING_CONTRACT.getStakedConvexLPBalance();
         const amountToWithdraw = web3.utils.toBN(initialStakedConvexLPBal).div(web3.utils.toBN(2))
         const expectedStakedConvexLPBalRemaining = initialStakedConvexLPBal - amountToWithdraw;
 
         await LENDING_CONTRACT.oneShotWithdraw(amountToWithdraw);
+
+        await debugDisplayAll(accounts[0]);
 
         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
@@ -424,6 +435,16 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
         assert.notEqual(actualContractBalUSDC, 0, "There should exist USDC from withdrawal");
         assert.notEqual(actualContractBalUSDT,0, "There should exist USDT from withdrawal");
     });
+
+    it("shouldGenerate3CRVInterest", async () => {
+        await poolActivitySimulation(accounts);
+
+        await advanceTime();
+
+        await LENDING_CONTRACT.oneShotWithdrawAll();
+
+        await debugDisplayAll(accounts[0]);
+    })
 });
 
 contract("TestCurveGauge", (accounts) => {
@@ -439,6 +460,43 @@ contract("AdvanceTime", (accounts) => {
         await advanceTime();
     });
 });
+
+const poolActivitySimulation = async (accounts) => {
+    USDC_CONTRACT = await IERC20.at(USDC);
+    USDT_CONTRACT = await IERC20.at(USDT);
+    DAI_CONTRACT = await IERC20.at(DAI);
+    EXCHANGE_CONTRACT = await EXCHANGE.new();
+
+    amount = 1
+
+    await web3.eth.sendTransaction({
+        from: accounts[0],
+        to: USDC_WHALE,
+        value: web3.utils.toWei(amount.toString(), "ether")
+    });
+
+    const usdcAmount = 440000000000000;
+    await USDC_CONTRACT.transfer(EXCHANGE_CONTRACT.address, usdcAmount, {
+        from: USDC_WHALE,
+        })
+
+    for (let i = 0; i < 200; i++) {
+        await EXCHANGE_CONTRACT.swapAll(USDC_INDEX, USDT_INDEX);
+        await EXCHANGE_CONTRACT.swapAll(USDT_INDEX, USDC_INDEX);
+    }
+}
+
+const exchangeDebugDisplayAll = async () => {
+    const exchangeContractUSDCBal = normalise(await USDC_CONTRACT.balanceOf(EXCHANGE_CONTRACT.address), USDC_DECIMAL);
+    const exchangeContractUSDTBal = normalise(await USDT_CONTRACT.balanceOf(EXCHANGE_CONTRACT.address), USDT_DECIMAL);
+
+    console.log("\n==========\n");
+
+    console.log("Exchange USDC bal:", exchangeContractUSDCBal.toString());
+    console.log("Exchange USDT bal:", exchangeContractUSDTBal.toString());
+
+    console.log("\n==========\n");
+}
 
 const debugDisplayAll = async (account) => {
     const currentBlockNumber = await web3.eth.getBlockNumber();
@@ -497,6 +555,10 @@ const debugDisplayAll = async (account) => {
     console.log("CRV bal:", crvBal.toString());
     console.log("CVX bal:", cvxBal.toString());
     console.log("Convex claimable CRV bal:", convexClaimableBal.toString());
+
+    console.log("\n");
+
+    console.log("Total stablecoin balance", contractBalDAI.add(contractBalUSDC).add(contractBalUSDT).toString());
 
     console.log("\n==========\n");
 };

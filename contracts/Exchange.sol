@@ -30,9 +30,9 @@ contract CurveExchange {
 
         stableSwap.exchange(fromTokenIndex, toTokenIndex, balFrom, minAmount);
 
-        IERC20 toToken = token[uint128(toTokenIndex)];
-        uint256 balTo = toToken.balanceOf(address(this));
+        // IERC20 toToken = token[uint128(toTokenIndex)];
+        // uint256 balTo = toToken.balanceOf(address(this));
 
-        //toToken.safeTransfer(msg.sender, balTo);
+        // toToken.safeTransfer(msg.sender, balTo);
     }
 }
