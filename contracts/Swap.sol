@@ -118,9 +118,9 @@ contract SwapGovernance {
     IERC20[2] governanceToken = [CRV, CVX];
 
     // Goes via DAI to swap
-    function swapGovernanceFor3CRV(int128 tokenIndex, uint256 swapAmount, uint256 slippagewETH, uint256 slippageDAI) public {
-      uint256 wethReceived = curveSwapGovernanceToWETH(tokenIndex, swapAmount, swapAmount * (1 - slippagewETH) / 100);
-      swapV2(WETH_ADDRESS, DAI_ADDRESS, wethReceived, wethReceived * (1 - slippageDAI) / 100, address(this));
+    function swapGovernanceFor3CRV(int128 tokenIndex, uint256 swapAmount, uint256 minwETH, uint256 minDAI) public {
+      uint256 wethReceived = curveSwapGovernanceToWETH(tokenIndex, swapAmount, minwETH);
+      swapV2(WETH_ADDRESS, DAI_ADDRESS, wethReceived, minDAI, address(this));
       uint256 daiAmount = DAI.balanceOf(address(this));
       lend(daiAmount, 0, 0);
     }
