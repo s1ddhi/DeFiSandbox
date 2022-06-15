@@ -10,6 +10,7 @@ const DAI_INDEX = 0;
 const DAI_DECIMAL = 18;
 
 const USDC_WHALE = "0xcffad3200574698b78f32232aa9d63eabd290703";
+const USDC_WHALE_EXCHANGE = "0x0d2703ac846c26d5b6bbddf1fd6027204f409785";
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const USDC_INDEX = 1;
 const USDC_DECIMAL = 6;
@@ -19,7 +20,11 @@ const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 const USDT_INDEX = 2;
 const USDT_DECIMAL = 6;
 
+const POOL_ASSETS = 3;
+
 const ERC20_DECIMAL = 18;
+
+const erc20Amount = 1000000;
 
 contract("TestCurveLendingSingleAsset", (accounts) => {
     beforeEach(async () => {
@@ -369,9 +374,9 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
 
         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
-        await debugDisplayAll(accounts[0]);
-
         await LENDING_CONTRACT.oneShotLendAll();
+
+        await debugDisplayAll(accounts[0]);
 
         const snapshot = await timeMachine.takeSnapshot();
         snapshotId = snapshot['result'];
@@ -388,8 +393,6 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
         await advanceTime();
 
         await LENDING_CONTRACT.oneShotWithdrawAll();
-
-        await debugDisplayAll(accounts[0]);
 
         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
@@ -417,8 +420,6 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
 
         await LENDING_CONTRACT.oneShotWithdraw(amountToWithdraw);
 
-        await debugDisplayAll(accounts[0]);
-
         const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
@@ -437,13 +438,20 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
     });
 
     it("shouldGenerate3CRVInterest", async () => {
+        const initialStableCoinTotal = web3.utils.toBN(erc20Amount * POOL_ASSETS);
+
         await poolActivitySimulation(accounts);
 
         await advanceTime();
 
         await LENDING_CONTRACT.oneShotWithdrawAll();
 
-        await debugDisplayAll(accounts[0]);
+        const contractBalDAI = normalise(await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address), DAI_DECIMAL);
+        const contractBalUSDC = normalise(await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDC_DECIMAL);
+        const contractBalUSDT = normalise(await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address), USDT_DECIMAL);
+        const actualStablecoinTotal = contractBalDAI.add(contractBalUSDC).add(contractBalUSDT);
+        const stablecoinDifference = actualStablecoinTotal.sub(initialStableCoinTotal);
+        assert.isAbove(stablecoinDifference.toNumber(), 0,  "No interest was accrued from 3pool");
     })
 });
 
@@ -471,16 +479,16 @@ const poolActivitySimulation = async (accounts) => {
 
     await web3.eth.sendTransaction({
         from: accounts[0],
-        to: USDC_WHALE,
+        to: USDC_WHALE_EXCHANGE,
         value: web3.utils.toWei(amount.toString(), "ether")
     });
 
-    const usdcAmount = 440000000000000;
+    const usdcAmount = await USDC_CONTRACT.balanceOf(USDC_WHALE_EXCHANGE);
     await USDC_CONTRACT.transfer(EXCHANGE_CONTRACT.address, usdcAmount, {
-        from: USDC_WHALE,
+        from: USDC_WHALE_EXCHANGE,
         })
 
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 10; i++) {
         await EXCHANGE_CONTRACT.swapAll(USDC_INDEX, USDT_INDEX);
         await EXCHANGE_CONTRACT.swapAll(USDT_INDEX, USDC_INDEX);
     }
@@ -569,7 +577,6 @@ const setupAll = async (account, DESTINATION, ERC20_CONTRACT_1, ERC20_WHALE_ADDR
     await sendETH(account, ERC20_WHALE_ADDRESS_2, amount);
     await sendETH(account, ERC20_WHALE_ADDRESS_3, amount);
 
-    const erc20Amount = 1000000;
     await sendERC20(ERC20_CONTRACT_1, ERC20_WHALE_ADDRESS_1, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_1));
     await sendERC20(ERC20_CONTRACT_2, ERC20_WHALE_ADDRESS_2, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_2));
     await sendERC20(ERC20_CONTRACT_3, ERC20_WHALE_ADDRESS_3, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL_3));
@@ -579,7 +586,6 @@ const setupSingle = async (account, DESTINATION, ERC20_CONTRACT, ERC20_WHALE_ADD
     const amount = 1;
     await sendETH(account, ERC20_WHALE_ADDRESS, amount);
 
-    const erc20Amount = 1000000;
     await sendERC20(ERC20_CONTRACT, ERC20_WHALE_ADDRESS, DESTINATION, unnormalise(erc20Amount, ERC20_DECIMAL));
 };
 

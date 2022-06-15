@@ -12,195 +12,195 @@ const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 const ERC20_DECIMAL = 18;
 
-contract('TestCurveSwapToWETH', (accounts) => {
-    beforeEach(async () => {
-        CRV_CONTRACT = await IERC20.at(CRV);
-        CVX_CONTRACT = await IERC20.at(CVX);
-        SWAP_CONTRACT = await UNISWAP_GOVERNANCE.new();
-        DAI_CONTRACT = await IERC20.at(DAI);
-        WETH_CONTRACT = await IERC20.at(WETH);
-        CRV3LP_CONTRACT = await IERC20.at(CRV3LP);
+// contract('TestCurveSwapToWETH', (accounts) => {
+//     beforeEach(async () => {
+//         CRV_CONTRACT = await IERC20.at(CRV);
+//         CVX_CONTRACT = await IERC20.at(CVX);
+//         SWAP_CONTRACT = await UNISWAP_GOVERNANCE.new();
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         WETH_CONTRACT = await IERC20.at(WETH);
+//         CRV3LP_CONTRACT = await IERC20.at(CRV3LP);
 
-        const etherAmount = 1
+//         const etherAmount = 1
 
-        await web3.eth.sendTransaction({
-            from: accounts[0],
-            to: CRV_WHALE,
-            value: web3.utils.toWei(etherAmount.toString(), "ether")
-        });
+//         await web3.eth.sendTransaction({
+//             from: accounts[0],
+//             to: CRV_WHALE,
+//             value: web3.utils.toWei(etherAmount.toString(), "ether")
+//         });
 
-        await web3.eth.sendTransaction({
-            from: accounts[0],
-            to: CVX_WHALE,
-            value: web3.utils.toWei(etherAmount.toString(), "ether")
-        });
+//         await web3.eth.sendTransaction({
+//             from: accounts[0],
+//             to: CVX_WHALE,
+//             value: web3.utils.toWei(etherAmount.toString(), "ether")
+//         });
 
-        const erc20Amount = 10;
+//         const erc20Amount = 10;
 
-        await sendERC20(CRV_CONTRACT, CRV_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
-        await sendERC20(CVX_CONTRACT, CVX_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
+//         await sendERC20(CRV_CONTRACT, CRV_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
+//         await sendERC20(CVX_CONTRACT, CVX_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
 
-        const contractCRVbal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        const contractCVXbal = await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        const contract3CRVLPbal = await CRV3LP_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const contractCRVbal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const contractCVXbal = await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const contract3CRVLPbal = await CRV3LP_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        assert.notEqual(contractCRVbal, 0, '[Setup fault] There should exist CRV for contract to swap');
-        assert.notEqual(contractCVXbal, 0, '[Setup fault] There should exist CVX for contract to swap');
-        assert.equal(contract3CRVLPbal, 0, '[Setup fault] There should not exist any 3CRV LP tokens as no swaps has taken place');
-    });
+//         assert.notEqual(contractCRVbal, 0, '[Setup fault] There should exist CRV for contract to swap');
+//         assert.notEqual(contractCVXbal, 0, '[Setup fault] There should exist CVX for contract to swap');
+//         assert.equal(contract3CRVLPbal, 0, '[Setup fault] There should not exist any 3CRV LP tokens as no swaps has taken place');
+//     });
 
-    it('swapsCRVtoWETHViaCurve', async () => {
-        const absToSwap = 10;
+//     it('swapsCRVtoWETHViaCurve', async () => {
+//         const absToSwap = 10;
 
-        const swapAmount = unnormalise(absToSwap, ERC20_DECIMAL);
-        const outputAmount = 0;
+//         const swapAmount = unnormalise(absToSwap, ERC20_DECIMAL);
+//         const outputAmount = 0;
 
-        const initialContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
+//         const initialContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
 
-        await SWAP_CONTRACT.curveSwapGovernanceToWETH(0, swapAmount, outputAmount);
+//         await SWAP_CONTRACT.curveSwapGovernanceToWETH(0, swapAmount, outputAmount);
 
-        const actualAccountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        const actualContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
+//         const actualAccountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const actualContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
 
-        assert.notEqual(actualAccountBalWETH, 0, "There should exist WETH from CRV swap");
-        assert.equal(actualContractBalCRV, initialContractBalCRV - absToSwap, `Only ${swapAmount.toString()} of CRV should have been swapped`);
-    });
+//         assert.notEqual(actualAccountBalWETH, 0, "There should exist WETH from CRV swap");
+//         assert.equal(actualContractBalCRV, initialContractBalCRV - absToSwap, `Only ${swapAmount.toString()} of CRV should have been swapped`);
+//     });
 
-    it('swapsCVXtoWETHViaCurve', async () => {
-        const absToSwap = 10;
+//     it('swapsCVXtoWETHViaCurve', async () => {
+//         const absToSwap = 10;
 
-        const swapAmount = unnormalise(absToSwap, ERC20_DECIMAL);
-        const outputAmount = 0;
+//         const swapAmount = unnormalise(absToSwap, ERC20_DECIMAL);
+//         const outputAmount = 0;
 
-        const initialContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
+//         const initialContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
 
-        await SWAP_CONTRACT.curveSwapGovernanceToWETH(1, swapAmount, outputAmount);
+//         await SWAP_CONTRACT.curveSwapGovernanceToWETH(1, swapAmount, outputAmount);
 
-        const actualAccountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        const actualContractBalCVX = normalise(await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
+//         const actualAccountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const actualContractBalCVX = normalise(await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
 
-        assert.notEqual(actualAccountBalWETH, 0, "There should exist WETH from CRV swap");
-        assert.equal(actualContractBalCVX, initialContractBalCRV - absToSwap, `Only ${swapAmount.toString()} of CVX should have been swapped`);
-    });
+//         assert.notEqual(actualAccountBalWETH, 0, "There should exist WETH from CRV swap");
+//         assert.equal(actualContractBalCVX, initialContractBalCRV - absToSwap, `Only ${swapAmount.toString()} of CVX should have been swapped`);
+//     });
 
-    it.skip('swapsCRVToDAIV2ViaUniswap', async () => {
-        const absToSwap = 10;
+//     it.skip('swapsCRVToDAIV2ViaUniswap', async () => {
+//         const absToSwap = 10;
 
-        const swapAmount = unnormalise(absToSwap, ERC20_DECIMAL);
-        const outputAmount = unnormalise(1, ERC20_DECIMAL);
+//         const swapAmount = unnormalise(absToSwap, ERC20_DECIMAL);
+//         const outputAmount = unnormalise(1, ERC20_DECIMAL);
 
-        const initialContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
+//         const initialContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
 
-        await SWAP_CONTRACT.swapV2(CRV, DAI, swapAmount, outputAmount, accounts[0]);
+//         await SWAP_CONTRACT.swapV2(CRV, DAI, swapAmount, outputAmount, accounts[0]);
 
-        const actualAccountBalDAI = normalise(await DAI_CONTRACT.balanceOf(accounts[0]), ERC20_DECIMAL);
-        const actualContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
+//         const actualAccountBalDAI = normalise(await DAI_CONTRACT.balanceOf(accounts[0]), ERC20_DECIMAL);
+//         const actualContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
 
-        assert.notEqual(actualAccountBalDAI, 0, "There should exist DAI from CRV swap");
-        assert.equal(actualContractBalCRV, initialContractBalCRV - absToSwap, `Only ${swapAmount.toString()} of CRV should have been swapped`);
-    });
-});
+//         assert.notEqual(actualAccountBalDAI, 0, "There should exist DAI from CRV swap");
+//         assert.equal(actualContractBalCRV, initialContractBalCRV - absToSwap, `Only ${swapAmount.toString()} of CRV should have been swapped`);
+//     });
+// });
 
-contract('TestUniswapWETHToDai', async (accounts) => {
-    beforeEach(async () => {
-        CRV_CONTRACT = await IERC20.at(CRV);
-        CVX_CONTRACT = await IERC20.at(CVX);
-        SWAP_CONTRACT = await UNISWAP_GOVERNANCE.new();
-        DAI_CONTRACT = await IERC20.at(DAI);
-        WETH_CONTRACT = await IERC20.at(WETH);
-        CRV3LP_CONTRACT = await IERC20.at(CRV3LP);
+// contract('TestUniswapWETHToDai', async (accounts) => {
+//     beforeEach(async () => {
+//         CRV_CONTRACT = await IERC20.at(CRV);
+//         CVX_CONTRACT = await IERC20.at(CVX);
+//         SWAP_CONTRACT = await UNISWAP_GOVERNANCE.new();
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         WETH_CONTRACT = await IERC20.at(WETH);
+//         CRV3LP_CONTRACT = await IERC20.at(CRV3LP);
 
-        const etherAmount = 1
+//         const etherAmount = 1
 
-        await web3.eth.sendTransaction({
-            from: accounts[0],
-            to: CRV_WHALE,
-            value: web3.utils.toWei(etherAmount.toString(), "ether")
-        });
+//         await web3.eth.sendTransaction({
+//             from: accounts[0],
+//             to: CRV_WHALE,
+//             value: web3.utils.toWei(etherAmount.toString(), "ether")
+//         });
 
-        const erc20Amount = 10;
+//         const erc20Amount = 10;
 
-        await sendERC20(CRV_CONTRACT, CRV_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
+//         await sendERC20(CRV_CONTRACT, CRV_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
 
-        const contractCRVbal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const contractCRVbal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        assert.notEqual(contractCRVbal, 0, '[Setup fault] There should exist CRV for contract to swap');
+//         assert.notEqual(contractCRVbal, 0, '[Setup fault] There should exist CRV for contract to swap');
 
-        const swapAmount = unnormalise(erc20Amount, ERC20_DECIMAL);
-        const outputAmount = unnormalise(0, ERC20_DECIMAL);
+//         const swapAmount = unnormalise(erc20Amount, ERC20_DECIMAL);
+//         const outputAmount = unnormalise(0, ERC20_DECIMAL);
 
-        await SWAP_CONTRACT.curveSwapGovernanceToWETH(0, swapAmount, outputAmount);
+//         await SWAP_CONTRACT.curveSwapGovernanceToWETH(0, swapAmount, outputAmount);
 
-        const actualAccountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const actualAccountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        assert.notEqual(actualAccountBalWETH, 0, "[Setup fault] There should exist WETH from CRV swap");
-    });
+//         assert.notEqual(actualAccountBalWETH, 0, "[Setup fault] There should exist WETH from CRV swap");
+//     });
 
-    it('swapsToDAI', async () => {
-        const initialAccountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//     it('swapsToDAI', async () => {
+//         const initialAccountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        await SWAP_CONTRACT.swapV2(WETH, DAI, initialAccountBalWETH, 0, SWAP_CONTRACT.address);
+//         await SWAP_CONTRACT.swapV2(WETH, DAI, initialAccountBalWETH, 0, SWAP_CONTRACT.address);
 
-        const actualContractBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        const actualAccountBalDAI = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        assert.equal(actualContractBalWETH, 0, "All WETH should be swapped");
-        assert.notEqual(actualAccountBalDAI, 0, "There should exist DAI from WETH swap");
-    });
-});
+//         const actualContractBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const actualAccountBalDAI = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         assert.equal(actualContractBalWETH, 0, "All WETH should be swapped");
+//         assert.notEqual(actualAccountBalDAI, 0, "There should exist DAI from WETH swap");
+//     });
+// });
 
-contract('TestReinvestDAIInto3CRV', async (accounts) => {
-    beforeEach(async () => {
-        CRV_CONTRACT = await IERC20.at(CRV);
-        CVX_CONTRACT = await IERC20.at(CVX);
-        SWAP_CONTRACT = await UNISWAP_GOVERNANCE.new();
-        DAI_CONTRACT = await IERC20.at(DAI);
-        WETH_CONTRACT = await IERC20.at(WETH);
-        CRV3LP_CONTRACT = await IERC20.at(CRV3LP);
+// contract('TestReinvestDAIInto3CRV', async (accounts) => {
+//     beforeEach(async () => {
+//         CRV_CONTRACT = await IERC20.at(CRV);
+//         CVX_CONTRACT = await IERC20.at(CVX);
+//         SWAP_CONTRACT = await UNISWAP_GOVERNANCE.new();
+//         DAI_CONTRACT = await IERC20.at(DAI);
+//         WETH_CONTRACT = await IERC20.at(WETH);
+//         CRV3LP_CONTRACT = await IERC20.at(CRV3LP);
 
-        const etherAmount = 1
+//         const etherAmount = 1
 
-        await web3.eth.sendTransaction({
-            from: accounts[0],
-            to: CRV_WHALE,
-            value: web3.utils.toWei(etherAmount.toString(), "ether")
-        });
+//         await web3.eth.sendTransaction({
+//             from: accounts[0],
+//             to: CRV_WHALE,
+//             value: web3.utils.toWei(etherAmount.toString(), "ether")
+//         });
 
-        const erc20Amount = 10;
+//         const erc20Amount = 10;
 
-        await sendERC20(CRV_CONTRACT, CRV_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
+//         await sendERC20(CRV_CONTRACT, CRV_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
 
-        const contractCRVbal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const contractCRVbal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        assert.notEqual(contractCRVbal, 0, '[Setup fault] There should exist CRV for contract to swap');
+//         assert.notEqual(contractCRVbal, 0, '[Setup fault] There should exist CRV for contract to swap');
 
-        const swapAmount = unnormalise(erc20Amount, ERC20_DECIMAL);
-        const outputAmount = unnormalise(0, ERC20_DECIMAL);
+//         const swapAmount = unnormalise(erc20Amount, ERC20_DECIMAL);
+//         const outputAmount = unnormalise(0, ERC20_DECIMAL);
 
-        await SWAP_CONTRACT.curveSwapGovernanceToWETH(0, swapAmount, outputAmount);
+//         await SWAP_CONTRACT.curveSwapGovernanceToWETH(0, swapAmount, outputAmount);
 
-        const accountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const accountBalWETH = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        assert.notEqual(accountBalWETH, 0, "[Setup fault] There should exist WETH from CRV swap");
+//         assert.notEqual(accountBalWETH, 0, "[Setup fault] There should exist WETH from CRV swap");
 
-        await SWAP_CONTRACT.swapV2(WETH, DAI, accountBalWETH, 0, SWAP_CONTRACT.address);
+//         await SWAP_CONTRACT.swapV2(WETH, DAI, accountBalWETH, 0, SWAP_CONTRACT.address);
 
-        const accountBalDAI = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const accountBalDAI = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        assert.notEqual(accountBalDAI, 0, "[Setup fault] There should exist DAI from WETH swap");
-    });
+//         assert.notEqual(accountBalDAI, 0, "[Setup fault] There should exist DAI from WETH swap");
+//     });
 
-    it('lendsDAIFor3CRV', async () => {
-        const initialContractBalDAI = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//     it('lendsDAIFor3CRV', async () => {
+//         const initialContractBalDAI = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        await SWAP_CONTRACT.lend(initialContractBalDAI, 0, 0);
+//         await SWAP_CONTRACT.lend(initialContractBalDAI, 0, 0);
 
-        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        const actualContractBal3CRV = await CRV3LP_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const actualContractBalDAI = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+//         const actualContractBal3CRV = await CRV3LP_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        assert.equal(actualContractBalDAI, 0, "All DAI should have been lent out for 3CRV");
-        assert.notEqual(actualContractBal3CRV, 0, "There should exist 3CRV from lending DAI");
-    });
-});
+//         assert.equal(actualContractBalDAI, 0, "All DAI should have been lent out for 3CRV");
+//         assert.notEqual(actualContractBal3CRV, 0, "There should exist 3CRV from lending DAI");
+//     });
+// });
 
 contract('TestOneShotSwapGovernance', async (accounts) => {
     beforeEach(async() => {
@@ -242,7 +242,7 @@ contract('TestOneShotSwapGovernance', async (accounts) => {
     it('swapsCRVFor3CRV', async () => {
         const crvSwapAmount = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        await SWAP_CONTRACT.swapGovernanceFor3CRV(0, crvSwapAmount, 0);
+        await SWAP_CONTRACT.swapGovernanceFor3CRV(0, crvSwapAmount, 1, 1);
 
         const actualContractCRVBal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
         const actualContractWETHBal = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);;
@@ -258,7 +258,7 @@ contract('TestOneShotSwapGovernance', async (accounts) => {
     it('swapsCVXFor3CRV', async () => {
         const cvxSwapAmount = await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address);
 
-        await SWAP_CONTRACT.swapGovernanceFor3CRV(1, cvxSwapAmount, 0);
+        await SWAP_CONTRACT.swapGovernanceFor3CRV(1, cvxSwapAmount, 1, 1);
 
         const actualContractCVXBal = await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address);
         const actualContractWETHBal = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);;
