@@ -28,6 +28,9 @@ const ERC20_DECIMAL = 18;
 
 const erc20Amount = 1000000;
 
+const CRV3LP_ADDRESS = "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490";
+const CONVEX_3CRV_TOKEN_ADDRESS = "0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C";
+
 contract("TestCurveLendingSingleAsset", (accounts) => {
     beforeEach(async () => {
         DAI_CONTRACT = await IERC20.at(DAI);
@@ -304,6 +307,8 @@ contract("TestCurveOneShotLending", (accounts) => {
         USDC_CONTRACT = await IERC20.at(USDC);
         DAI_CONTRACT = await IERC20.at(DAI);
         LENDING_CONTRACT = await LENDING.new();
+        CRV3LP = await IERC20.at(CRV3LP_ADDRESS);
+        CONVEX_3CRV = await IERC20.at(CONVEX_3CRV_TOKEN_ADDRESS);
 
         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
@@ -327,8 +332,8 @@ contract("TestCurveOneShotLending", (accounts) => {
         assert.equal(actualContractBalUSDC, 0, "All USDC should have been lent out");
         assert.equal(actualContractBalUSDT,0, "All USDT should have been lent out");
 
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        const actual3CRVLPBalance = await CRV3LP.balanceOf(LENDING_CONTRACT.address);
+        const actualConvexLPBalance = await CONVEX_3CRV.balanceOf(LENDING_CONTRACT.address);
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
 
         assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be deposited and staked into Convex");
@@ -355,8 +360,8 @@ contract("TestCurveOneShotLending", (accounts) => {
         assert.equal(actualContractBalUSDC.toString(), toLendContractBalUSDC.toString(), "Half of USDC should have been lent out");
         assert.equal(actualContractBalUSDT.toString(), toLendContractBalUSDT.toString(), "Half of USDT should have been lent out");
 
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        const actual3CRVLPBalance = await CRV3LP.balanceOf(LENDING_CONTRACT.address);
+        const actualConvexLPBalance = await CONVEX_3CRV.balanceOf(LENDING_CONTRACT.address);
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
 
         assert.equal(actual3CRVLPBalance, 0, "There should be no 3CRV LP as all should be deposited and staked into Convex");
@@ -372,6 +377,8 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
         DAI_CONTRACT = await IERC20.at(DAI);
         LENDING_CONTRACT = await LENDING.new();
         EXCHANGE_CONTRACT = await EXCHANGE.new();
+        CRV3LP = await IERC20.at(CRV3LP_ADDRESS);
+        CONVEX_3CRV = await IERC20.at(CONVEX_3CRV_TOKEN_ADDRESS);
 
         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
@@ -393,8 +400,8 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
 
         await LENDING_CONTRACT.oneShotWithdrawAll();
 
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        const actual3CRVLPBalance = await CRV3LP.balanceOf(LENDING_CONTRACT.address);
+        const actualConvexLPBalance = await CONVEX_3CRV.balanceOf(LENDING_CONTRACT.address);
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
 
         assert.equal(actualStakedConvexLPBalance, 0, "There should be no Staked Convex LP as all should have been withdrawn into Convex LP and unwrapped");
@@ -419,8 +426,8 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
 
         await LENDING_CONTRACT.oneShotWithdraw(amountToWithdraw);
 
-        const actual3CRVLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
-        const actualConvexLPBalance = await LENDING_CONTRACT.getConvexLPBalance();
+        const actual3CRVLPBalance = await CRV3LP.balanceOf(LENDING_CONTRACT.address);
+        const actualConvexLPBalance = await CONVEX_3CRV.balanceOf(LENDING_CONTRACT.address);
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
 
         assert.equal(actualStakedConvexLPBalance, expectedStakedConvexLPBalRemaining, `There should be ${expectedStakedConvexLPBalRemaining} Staked Convex LP as only half should have been withdrawn into Convex LP and unwrapped`);

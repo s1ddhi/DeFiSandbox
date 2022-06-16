@@ -27,18 +27,10 @@ interface IConvexBooster {
 interface IConvexRewards {
     function balanceOf(address _account) external view returns(uint256);
     function withdraw(uint256 _amount, bool _claim) external returns(bool);
-    function withdrawAndUnwrap(uint256 _amount, bool _claim) external returns(bool);
-    function getReward() external returns(bool);
-    function stake(uint256 _amount) external returns(bool);
-    function stakeFor(address _account,uint256 _amount) external returns(bool);
     function earned(address account) external view returns (uint256);
 }
 
-interface ICurveGauge {
-    function claimable_tokens(address addr) external returns(uint256);
-}
-
-contract CurveLending is Ownable, ReentrancyGuard {
+contract CurveConvexLP is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // Stablecoins
@@ -57,26 +49,17 @@ contract CurveLending is Ownable, ReentrancyGuard {
 
     // ERC-20 Assets
     address constant private CRV3LP_ADDRESS = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
-    address constant private CRV_TOKEN_ADDRESS = 0xD533a949740bb3306d119CC777fa900bA034cd52;
-    address constant private CVX_TOKEN_ADDRESS = 0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B;
     address constant private CONVEX_3CRV_TOKEN_ADDRESS = 0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C;
     ICURVE3LPToken constant private CRV3LP_TOKEN = ICURVE3LPToken(CRV3LP_ADDRESS);
-    IERC20 constant private CRV_TOKEN = IERC20(CRV_TOKEN_ADDRESS);
-    IERC20 constant private CVX_TOKEN = IERC20(CVX_TOKEN_ADDRESS);
-    IERC20 constant private CONVEX_3CRV_TOKEN = IERC20(CONVEX_3CRV_TOKEN_ADDRESS);
 
     // Pools
-    uint256 constant private PID = 9; // https://etherscan.io/address/0x9700152175dc22E7d1f3245fE3c1D2cfa3602548#readContract
+    uint256 constant private CONVEX_3POOL_PID = 9; // https://etherscan.io/address/0x9700152175dc22E7d1f3245fE3c1D2cfa3602548#readContract
     address constant private CURVE3POOL_ADDRESS = 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7;
     address constant private BOOSTER_CONTRACT_ADDRESS = 0xF403C135812408BFbE8713b5A23a04b3D48AAE31;
     address constant private CONVEX_3POOL_REWARDS_ADDRESS = 0x689440f2Ff927E1f24c72F1087E1FAF471eCe1c8;
     ICurve3Pool constant private CURVE3POOL = ICurve3Pool(CURVE3POOL_ADDRESS);
     IConvexBooster constant private CONVEX_BOOSTER = IConvexBooster(BOOSTER_CONTRACT_ADDRESS);
     IConvexRewards constant private CONVEX_3POOL_REWARDS = IConvexRewards(CONVEX_3POOL_REWARDS_ADDRESS);
-
-    // Curve Gauge
-    address constant private CURVE_GAUGE_ADDRESS = 0xbFcF63294aD7105dEa65aA58F8AE5BE2D9d0952A;
-    ICurveGauge constant private CURVE_GAUGE = ICurveGauge(CURVE_GAUGE_ADDRESS);
 
     // MAIN METHODS //
 
@@ -109,7 +92,7 @@ contract CurveLending is Ownable, ReentrancyGuard {
 
     // MAIN METHODS //
 
-    // UTILITY METHODS //
+    // UTILITY METHODS - TODO re-run gas simulation + do for Swap + interest rate model script //
 
     function isConvexShutdown() public view returns(bool) {
         bool status = CONVEX_BOOSTER.isShutdown();
@@ -134,6 +117,7 @@ contract CurveLending is Ownable, ReentrancyGuard {
        return [balToken0, balToken1, balToken2];
     }
 
+
     function approveLend(uint256[3] memory balance) private {
         for (uint i = 0; i < balance.length; i++) {
             token[i].safeApprove(CURVE3POOL_ADDRESS, balance[i]);
@@ -144,29 +128,12 @@ contract CurveLending is Ownable, ReentrancyGuard {
         return CRV3LP_TOKEN.balanceOf(address(this));
     }
 
-    function getConvexLPBalance() public view returns(uint256) {
-        return CONVEX_3CRV_TOKEN.balanceOf(address(this));
-    }
-
     function getStakedConvexLPBalance() public view returns(uint256) {
         return CONVEX_3POOL_REWARDS.balanceOf(address(this));
     }
 
     function getClaimableRewards() public view returns(uint256) {
         return CONVEX_3POOL_REWARDS.earned(address(this));
-    }
-
-    function getCRVBalance() public view returns(uint256) {
-        return CRV_TOKEN.balanceOf(address(this));
-    }
-
-    function getCVXBalance() public view returns(uint256) {
-        return CVX_TOKEN.balanceOf(address(this));
-    }
-
-    function getGaugeBalance() public returns(uint256) {
-        uint256 bal = CURVE_GAUGE.claimable_tokens(address(this));
-        return bal;
     }
 
     // UTILITY METHODS //
@@ -188,21 +155,21 @@ contract CurveLending is Ownable, ReentrancyGuard {
 
     // INTERNAL METHODS //
 
-    function lendAll() public onlyOwner {
+    function lendAll() private {
         uint256[3] memory balance = getCallerBalance();
         approveLend(balance);
         uint256 min_mint_amount = 1;
         CURVE3POOL.add_liquidity(balance, min_mint_amount);
     }
 
-    function lend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public onlyOwner {
+    function lend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) private {
         uint256[3] memory balance = [daiAmount, usdcAmount, usdtAmount];
         approveLend(balance);
         uint256 min_mint_amount = 1;
         CURVE3POOL.add_liquidity(balance, min_mint_amount);
     }
 
-    function withdrawAllLP(int128 coinIndex) public onlyOwner {
+    function withdrawAllLP(int128 coinIndex) private {
         uint256 bal = get3CRVLPBalance();
         if (coinIndex == -1) {
             uint256[3] memory minAmount = [uint256(0), 0, 0];
@@ -213,27 +180,17 @@ contract CurveLending is Ownable, ReentrancyGuard {
         }
     }
 
-    function withdrawLP(int128 coinIndex, uint256 lpAmount) public onlyOwner {
-        if (coinIndex == -1) {
-            uint256[3] memory minAmount = [uint256(0), 0, 0];
-            CURVE3POOL.remove_liquidity(lpAmount, minAmount);
-        } else {
-            uint256 minAmount = 0;
-            CURVE3POOL.remove_liquidity_one_coin(lpAmount, coinIndex, minAmount);
-        }
-    }
-
-    function convexDeposit(uint256 amount, bool toStake) public isNotShutdown onlyOwner {
+    function convexDeposit(uint256 amount, bool toStake) private isNotShutdown {
         CRV3LP_TOKEN.approve(BOOSTER_CONTRACT_ADDRESS, amount);
-        CONVEX_BOOSTER.deposit(PID, amount, toStake);
+        CONVEX_BOOSTER.deposit(CONVEX_3POOL_PID, amount, toStake);
     }
 
-    function convexUnstake(uint256 amount) public hasClaimableRewards onlyOwner {
+    function convexUnstake(uint256 amount) private hasClaimableRewards {
         CONVEX_3POOL_REWARDS.withdraw(amount, true);
     }
 
-    function convexWithdraw(uint256 amount) public onlyOwner {
-        CONVEX_BOOSTER.withdraw(PID, amount);
+    function convexWithdraw(uint256 amount) private {
+        CONVEX_BOOSTER.withdraw(CONVEX_3POOL_PID, amount);
     }
 
     // INTERNAL METHODS //
