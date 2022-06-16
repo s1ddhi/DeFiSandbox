@@ -2,7 +2,8 @@ const timeMachine = require('ganache-time-traveler');
 
 const IERC20 = artifacts.require("IERC20");
 const LENDING = artifacts.require("CurveLending");
-const EXCHANGE = artifacts.require("CurveExchange")
+const EXCHANGE = artifacts.require("CurveExchange");
+const IMBALANCER = artifacts.require("Imbalancer");
 
 const DAI_WHALE = "0x28c6c06298d514db089934071355e5743bf21d60";
 const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
@@ -15,7 +16,8 @@ const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const USDC_INDEX = 1;
 const USDC_DECIMAL = 6;
 
-const USDT_WHALE = "0x5754284f345afc66a98fbb0a0afe71e0f007b949";
+const USDT_WHALE = "0x5041ed759dd4afc3a72b8192c143f72f4724081a";
+const USDT_WHALE_IMBALANCE = "0x5754284f345afc66a98fbb0a0afe71e0f007b949";
 const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 const USDT_INDEX = 2;
 const USDT_DECIMAL = 6;
@@ -25,6 +27,8 @@ const POOL_ASSETS = 3;
 const ERC20_DECIMAL = 18;
 
 const erc20Amount = 1000000;
+
+let IMBALANCED = false;
 
 contract("TestCurveLendingSingleAsset", (accounts) => {
     beforeEach(async () => {
@@ -68,7 +72,6 @@ contract("TestCurveLendingMultiAsset", (accounts) => {
 
         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
-        // DAI
         const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
         const actualContractLPBalance = await LENDING_CONTRACT.get3CRVLPBalance();
@@ -455,6 +458,56 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
     })
 });
 
+
+contract("TestCurveImbalance", (accounts) => {
+    beforeEach(async () => {
+        DAI_CONTRACT = await IERC20.at(DAI);
+        USDC_CONTRACT = await IERC20.at(USDC);
+        USDT_CONTRACT = await IERC20.at(USDT);
+        LENDING_CONTRACT = await LENDING.new();
+
+        await createPoolImbalance();
+
+        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalDAI, 0, "[Setup fault] There is no DAI in contract where there should be.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
+        const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDT, 0, "[Setup fault] There is no USDT in contract where there should be.");
+    });
+
+    it("lendingWorksAsExpected", async () => {
+        await LENDING_CONTRACT.lendAll();
+
+        const actualContractBal3CRV = await LENDING_CONTRACT.get3CRVLPBalance();
+        assert.notEqual(actualContractBal3CRV, 0, "There should exist 3CRV LP from LP");
+    });
+
+    it("withdrawWorksAsExpected", async () => {
+        await LENDING_CONTRACT.lendAll();
+
+        const actualContractBal3CRV = await LENDING_CONTRACT.get3CRVLPBalance();
+        assert.notEqual(actualContractBal3CRV, 0, "[Internal setup fault] There should exist 3CRV LP from LP");
+
+        await debugDisplayAll(accounts[0]);
+
+        await LENDING_CONTRACT.withdrawAllLP(-1);
+
+        await debugDisplayAll(accounts[0]);
+
+        lpBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+        assert.equal(lpBalance, 0, "There should not be LP tokens where there is as all should be converted.");
+        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalDAI, 0, "There should be DAI from withdrawing assets associated with LP tokens.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+        const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDT, 0, "There should be USDT from withdrawing assets associated with LP tokens.");
+    });
+});
+
 contract("TestCurveGauge", (accounts) => {
     it("getsGaugeBalance", async () => {
         LENDING_CONTRACT = await LENDING.new();
@@ -463,11 +516,28 @@ contract("TestCurveGauge", (accounts) => {
     });
 });
 
-contract("AdvanceTime", (accounts) => {
-    it("advancesTimeByOneMonth", async () => {
-        await advanceTime();
-    });
-});
+const createPoolImbalance = async () => {
+    if (!IMBALANCED) {
+        USDC_CONTRACT = await IERC20.at(USDC);
+        USDT_CONTRACT = await IERC20.at(USDT);
+        DAI_CONTRACT = await IERC20.at(DAI);
+        IMBALANCER_CONTRACT = await IMBALANCER.new();
+
+        const usdtAmount = await USDT_CONTRACT.balanceOf(USDT_WHALE_IMBALANCE);
+
+        await USDT_CONTRACT.transfer(IMBALANCER_CONTRACT.address, usdtAmount, {
+            from: USDT_WHALE_IMBALANCE,
+        });
+
+        const contractBalUSDT = await USDT_CONTRACT.balanceOf(IMBALANCER_CONTRACT.address);
+
+        await IMBALANCER_CONTRACT.lend(0, 0, contractBalUSDT);
+
+        await poolDebugDisplayAll();
+
+        IMBALANCED = true;
+    }
+}
 
 const poolActivitySimulation = async (accounts) => {
     USDC_CONTRACT = await IERC20.at(USDC);
@@ -493,6 +563,26 @@ const poolActivitySimulation = async (accounts) => {
         await EXCHANGE_CONTRACT.swapAll(USDT_INDEX, USDC_INDEX);
     }
 }
+
+const poolDebugDisplayAll = async () => {
+    LENDING_CONTRACT = await LENDING.new();
+
+    const poolBal = await LENDING_CONTRACT.getPoolBalance();
+
+    const poolBalDAI =  normalise(poolBal[0], DAI_DECIMAL).toNumber();
+    const poolBalUSDC = normalise(poolBal[1], USDC_DECIMAL).toNumber();
+    const poolBalUSDT = normalise(poolBal[2], USDT_DECIMAL).toNumber();
+
+    const totalPoolAssets = poolBalDAI + poolBalUSDC + poolBalUSDT;
+
+    console.log("\n==========\n");
+
+    console.log(`Pool DAI bal: ${poolBalDAI} (~${(poolBalDAI * 100 / totalPoolAssets).toFixed(2)} % share)`);
+    console.log(`Pool USDC bal: ${poolBalUSDC} (~${(poolBalUSDC * 100 / totalPoolAssets).toFixed(2)}% share)`);
+    console.log(`Pool USDT bal: ${poolBalUSDT} (~${(poolBalUSDT * 100 / totalPoolAssets).toFixed(2)}% share)`);
+
+    console.log("\n==========\n");
+};
 
 const exchangeDebugDisplayAll = async () => {
     const exchangeContractUSDCBal = normalise(await USDC_CONTRACT.balanceOf(EXCHANGE_CONTRACT.address), USDC_DECIMAL);

@@ -7,6 +7,7 @@ interface ICurve3Pool {
    function add_liquidity(uint256[3] calldata amounts, uint256 min_mint_amount) external;
    function remove_liquidity(uint256 _amount, uint256[3] calldata min_amounts) external;
    function remove_liquidity_one_coin(uint256 _token_amount, int128 i, uint256 min_amount) external;
+   function balances(uint256 index) external view returns(uint256);
 }
 
 interface ICURVE3LPToken {
@@ -14,30 +15,20 @@ interface ICURVE3LPToken {
     function approve(address _spender, uint256 _value) external returns(bool);
 }
 
-// Also known as the "Deposit contract"
 interface IConvexBooster {
-    //deposit into convex, receive a tokenized deposit.  parameter to stake immediately
     function deposit(uint256 _pid, uint256 _amount, bool _stake) external returns(bool);
-    //burn a tokenized deposit to receive curve lp tokens back
     function withdraw(uint256 _pid, uint256 _amount) external returns(bool);
-    //burn all tokenized deposit to receive all curve lp tokens back
     function withdrawAll(uint256 _pid) external returns(bool);
+    function isShutdown() external view returns(bool);
 }
 
 interface IConvexRewards {
-    //get balance of an address
     function balanceOf(address _account) external view returns(uint256);
-    //withdraw to a convex tokenized deposit
     function withdraw(uint256 _amount, bool _claim) external returns(bool);
-    //withdraw directly to curve LP token
     function withdrawAndUnwrap(uint256 _amount, bool _claim) external returns(bool);
-    //claim rewards
     function getReward() external returns(bool);
-    //stake a convex tokenized deposit
     function stake(uint256 _amount) external returns(bool);
-    //stake a convex tokenized deposit for another address(transfering ownership)
     function stakeFor(address _account,uint256 _amount) external returns(bool);
-    //get earned awards of an address
     function earned(address account) external view returns (uint256);
 }
 
@@ -64,8 +55,19 @@ contract CurveLending {
     address constant private CURVE3POOL_ADDRESS = 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7;
     ICurve3Pool constant private CURVE3POOL = ICurve3Pool(CURVE3POOL_ADDRESS);
 
+    function getPoolBalanceToken(uint256 tokenIndex) public view returns(uint256) {
+        return CURVE3POOL.balances(tokenIndex);
+    }
+
+    function getPoolBalance() public view returns(uint256[3] memory) {
+        uint256 balDAI = getPoolBalanceToken(DAI_INDEX);
+        uint256 balUSDC = getPoolBalanceToken(USDC_INDEX);
+        uint256 balUSDT = getPoolBalanceToken(USDT_INDEX);
+        return [balDAI, balUSDC, balUSDT];
+    }
+
     function lendAll() public {
-        uint256[3] memory balance = getBalance();
+        uint256[3] memory balance = getCallerBalance();
         approveLend(balance);
         uint256 min_mint_amount = 1;
         CURVE3POOL.add_liquidity(balance, min_mint_amount);
@@ -78,7 +80,7 @@ contract CurveLending {
         CURVE3POOL.add_liquidity(balance, min_mint_amount);
     }
 
-    function getBalance() view private returns(uint256[3] memory) {
+    function getCallerBalance() view private returns(uint256[3] memory) {
        uint256 balToken0 = token[0].balanceOf(address(this));
        uint256 balToken1 = token[1].balanceOf(address(this));
        uint256 balToken2 = token[2].balanceOf(address(this));
@@ -128,6 +130,11 @@ contract CurveLending {
     IConvexRewards constant private CONVEX_3POOL_REWARDS = IConvexRewards(CONVEX_3POOL_REWARDS_ADDRESS);
     address constant private CONVEX_3CRV_TOKEN_ADDRESS = 0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C;
     IERC20 constant private CONVEX_3CRV_TOKEN = IERC20(CONVEX_3CRV_TOKEN_ADDRESS);
+
+    function isConvexShutdown() public view returns(bool) {
+        bool status = CONVEX_BOOSTER.isShutdown();
+        return status;
+    }
 
     function convexDeposit(uint256 amount, bool toStake) public {
         CRV3LP_TOKEN.approve(BOOSTER_CONTRACT_ADDRESS, amount);
