@@ -28,8 +28,6 @@ const ERC20_DECIMAL = 18;
 
 const erc20Amount = 1000000;
 
-let IMBALANCED = false;
-
 contract("TestCurveLendingSingleAsset", (accounts) => {
     beforeEach(async () => {
         DAI_CONTRACT = await IERC20.at(DAI);
@@ -379,8 +377,6 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
 
         await LENDING_CONTRACT.oneShotLendAll();
 
-        await debugDisplayAll(accounts[0]);
-
         const snapshot = await timeMachine.takeSnapshot();
         snapshotId = snapshot['result'];
 
@@ -458,15 +454,12 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
     })
 });
 
-
-contract("TestCurveImbalance", (accounts) => {
+contract("TestCurveImbalanceOperationsAfter", (accounts) => {
     beforeEach(async () => {
         DAI_CONTRACT = await IERC20.at(DAI);
         USDC_CONTRACT = await IERC20.at(USDC);
         USDT_CONTRACT = await IERC20.at(USDT);
         LENDING_CONTRACT = await LENDING.new();
-
-        await createPoolImbalance();
 
         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
@@ -476,6 +469,14 @@ contract("TestCurveImbalance", (accounts) => {
         assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
         const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
         assert.notEqual(actualContractBalUSDT, 0, "[Setup fault] There is no USDT in contract where there should be.");
+
+        const snapshot = await timeMachine.takeSnapshot();
+        snapshotId = snapshot['result'];
+        await advanceTime();
+    });
+
+    afterEach(async () => {
+        await timeMachine.revertToSnapshot(snapshotId);
     });
 
     it("lendingWorksAsExpected", async () => {
@@ -491,11 +492,7 @@ contract("TestCurveImbalance", (accounts) => {
         const actualContractBal3CRV = await LENDING_CONTRACT.get3CRVLPBalance();
         assert.notEqual(actualContractBal3CRV, 0, "[Internal setup fault] There should exist 3CRV LP from LP");
 
-        await debugDisplayAll(accounts[0]);
-
         await LENDING_CONTRACT.withdrawAllLP(-1);
-
-        await debugDisplayAll(accounts[0]);
 
         lpBalance = await LENDING_CONTRACT.get3CRVLPBalance();
         assert.equal(lpBalance, 0, "There should not be LP tokens where there is as all should be converted.");
@@ -508,35 +505,77 @@ contract("TestCurveImbalance", (accounts) => {
     });
 });
 
+contract("TestCurveImbalanceWhileHolding", (accounts) => {
+    beforeEach(async () => {
+        DAI_CONTRACT = await IERC20.at(DAI);
+        USDC_CONTRACT = await IERC20.at(USDC);
+        USDT_CONTRACT = await IERC20.at(USDT);
+        LENDING_CONTRACT = await LENDING.new();
+
+        await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
+
+        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalDAI, 0, "[Setup fault] There is no DAI in contract where there should be.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDC, 0, "[Setup fault] There is no USDC in contract where there should be.");
+        const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDT, 0, "[Setup fault] There is no USDT in contract where there should be.");
+
+        const snapshot = await timeMachine.takeSnapshot();
+        snapshotId = snapshot['result'];
+        await advanceTime();
+    });
+
+    afterEach(async () => {
+        await timeMachine.revertToSnapshot(snapshotId);
+    });
+
+    it("withdrawWorksAsExpected", async () => {
+        await LENDING_CONTRACT.lendAll();
+
+        const actualContractBal3CRV = await LENDING_CONTRACT.get3CRVLPBalance();
+        assert.notEqual(actualContractBal3CRV, 0, "[Internal setup fault] There should exist 3CRV LP from LP");
+
+        await createPoolImbalance(accounts[0]);
+
+        await LENDING_CONTRACT.withdrawAllLP(-1);
+
+        lpBalance = await LENDING_CONTRACT.get3CRVLPBalance();
+        assert.equal(lpBalance, 0, "There should not be LP tokens where there is as all should be converted.");
+        const actualContractBalDAI = await DAI_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalDAI, 0, "There should be DAI from withdrawing assets associated with LP tokens.");
+        const actualContractBalUSDC = await USDC_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDC, 0, "There should be USDC from withdrawing assets associated with LP tokens.");
+        const actualContractBalUSDT = await USDT_CONTRACT.balanceOf(LENDING_CONTRACT.address);
+        assert.notEqual(actualContractBalUSDT, 0, "There should be USDT from withdrawing assets associated with LP tokens.");
+    });
+});
+
+// Example of static function call
 contract("TestCurveGauge", (accounts) => {
     it("getsGaugeBalance", async () => {
         LENDING_CONTRACT = await LENDING.new();
         const bal = await LENDING_CONTRACT.getGaugeBalance.call();
-        console.log(bal.toString());
     });
 });
 
 const createPoolImbalance = async () => {
-    if (!IMBALANCED) {
-        USDC_CONTRACT = await IERC20.at(USDC);
-        USDT_CONTRACT = await IERC20.at(USDT);
-        DAI_CONTRACT = await IERC20.at(DAI);
-        IMBALANCER_CONTRACT = await IMBALANCER.new();
+    USDC_CONTRACT = await IERC20.at(USDC);
+    USDT_CONTRACT = await IERC20.at(USDT);
+    DAI_CONTRACT = await IERC20.at(DAI);
+    IMBALANCER_CONTRACT = await IMBALANCER.new();
 
-        const usdtAmount = await USDT_CONTRACT.balanceOf(USDT_WHALE_IMBALANCE);
+    const usdtAmount = await USDT_CONTRACT.balanceOf(USDT_WHALE_IMBALANCE);
 
-        await USDT_CONTRACT.transfer(IMBALANCER_CONTRACT.address, usdtAmount, {
-            from: USDT_WHALE_IMBALANCE,
-        });
+    await USDT_CONTRACT.transfer(IMBALANCER_CONTRACT.address, usdtAmount, {
+        from: USDT_WHALE_IMBALANCE,
+    });
 
-        const contractBalUSDT = await USDT_CONTRACT.balanceOf(IMBALANCER_CONTRACT.address);
+    const contractBalUSDT = await USDT_CONTRACT.balanceOf(IMBALANCER_CONTRACT.address);
 
-        await IMBALANCER_CONTRACT.lend(0, 0, contractBalUSDT);
+    await IMBALANCER_CONTRACT.lend(0, 0, contractBalUSDT);
 
-        await poolDebugDisplayAll();
-
-        IMBALANCED = true;
-    }
+    await poolDebugDisplayAll();
 }
 
 const poolActivitySimulation = async (accounts) => {
@@ -565,8 +604,6 @@ const poolActivitySimulation = async (accounts) => {
 }
 
 const poolDebugDisplayAll = async () => {
-    LENDING_CONTRACT = await LENDING.new();
-
     const poolBal = await LENDING_CONTRACT.getPoolBalance();
 
     const poolBalDAI =  normalise(poolBal[0], DAI_DECIMAL).toNumber();
@@ -644,15 +681,15 @@ const debugDisplayAll = async (account) => {
 
     console.log("\n");
 
-    console.log("3CRV LP bal:", curveLPBal.toString());
-    console.log("Convex LP bal:", convexLPBal.toString());
-    console.log("Staked Convex LP bal:", stakedConvexLPBal.toString());
+    console.log("Contract 3CRV LP bal:", curveLPBal.toString());
+    console.log("Contract Convex LP bal:", convexLPBal.toString());
+    console.log("Contract Staked Convex LP bal:", stakedConvexLPBal.toString());
 
     console.log("\n");
 
-    console.log("CRV bal:", crvBal.toString());
-    console.log("CVX bal:", cvxBal.toString());
-    console.log("Convex claimable CRV bal:", convexClaimableBal.toString());
+    console.log("Contract CRV bal:", crvBal.toString());
+    console.log("Contract CVX bal:", cvxBal.toString());
+    console.log("Contract Convex claimable CRV bal:", convexClaimableBal.toString());
 
     console.log("\n");
 
