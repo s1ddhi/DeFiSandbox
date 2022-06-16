@@ -2,6 +2,7 @@
 pragma solidity ^0.8.3;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 interface ICurve3Pool {
    function add_liquidity(uint256[3] calldata amounts, uint256 min_mint_amount) external;
@@ -36,7 +37,7 @@ interface ICurveGauge {
     function claimable_tokens(address addr) external returns(uint256);
 }
 
-contract CurveLending {
+contract CurveLending is Ownable {
     using SafeERC20 for IERC20;
 
     uint constant DAI_INDEX = 0;
@@ -66,14 +67,14 @@ contract CurveLending {
         return [balDAI, balUSDC, balUSDT];
     }
 
-    function lendAll() public {
+    function lendAll() public onlyOwner {
         uint256[3] memory balance = getCallerBalance();
         approveLend(balance);
         uint256 min_mint_amount = 1;
         CURVE3POOL.add_liquidity(balance, min_mint_amount);
     }
 
-    function lend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public {
+    function lend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public onlyOwner {
         uint256[3] memory balance = [daiAmount, usdcAmount, usdtAmount];
         approveLend(balance);
         uint256 min_mint_amount = 1;
@@ -100,7 +101,7 @@ contract CurveLending {
         return CRV3LP_TOKEN.balanceOf(address(this));
     }
 
-    function withdrawAllLP(int128 coinIndex) public {
+    function withdrawAllLP(int128 coinIndex) public onlyOwner {
         uint256 bal = get3CRVLPBalance();
         if (coinIndex == -1) {
             uint256[3] memory minAmount = [uint256(0), 0, 0];
@@ -111,7 +112,7 @@ contract CurveLending {
         }
     }
 
-    function withdrawLP(int128 coinIndex, uint256 lpAmount) public {
+    function withdrawLP(int128 coinIndex, uint256 lpAmount) public onlyOwner {
         if (coinIndex == -1) {
             uint256[3] memory minAmount = [uint256(0), 0, 0];
             CURVE3POOL.remove_liquidity(lpAmount, minAmount);
@@ -136,7 +137,12 @@ contract CurveLending {
         return status;
     }
 
-    function convexDeposit(uint256 amount, bool toStake) public {
+    modifier isNotShutdown {
+        require(!isConvexShutdown(), "Convex is not accepting deposits at the moment");
+        _;
+    }
+
+    function convexDeposit(uint256 amount, bool toStake) public isNotShutdown onlyOwner {
         CRV3LP_TOKEN.approve(BOOSTER_CONTRACT_ADDRESS, amount);
         CONVEX_BOOSTER.deposit(PID, amount, toStake);
     }
@@ -167,22 +173,21 @@ contract CurveLending {
         return CVX_TOKEN.balanceOf(address(this));
     }
 
-    function claimRewards() public {
+    function claimRewards() public onlyOwner {
         CONVEX_3POOL_REWARDS.getReward();
     }
 
-    // TODO check when no rewards to claim (if need to normalise rewards w.r.t. ERC20 decimal)
     modifier hasClaimableRewards {
         uint256 rewards = getClaimableRewards();
         require(rewards != 0, "There are no claimable rewards so we cannot call this function as it tries to claim and mint non-existent rewards");
         _;
     }
 
-    function convexUnstake(uint256 amount) public hasClaimableRewards {
+    function convexUnstake(uint256 amount) public hasClaimableRewards onlyOwner {
         CONVEX_3POOL_REWARDS.withdraw(amount, true);
     }
 
-    function convexWithdraw(uint256 amount) public {
+    function convexWithdraw(uint256 amount) public onlyOwner {
         CONVEX_BOOSTER.withdraw(PID, amount);
     }
 
@@ -194,19 +199,19 @@ contract CurveLending {
         return bal;
     }
 
-    function oneShotLendAll() public {
+    function oneShotLendAll() public onlyOwner {
         lendAll();
         uint256 CRV3LPBal = get3CRVLPBalance();
         convexDeposit(CRV3LPBal, true);
     }
 
-    function oneShotLend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public {
+    function oneShotLend(uint256 daiAmount, uint256 usdcAmount, uint256 usdtAmount) public onlyOwner {
         lend(daiAmount, usdcAmount, usdtAmount);
         uint256 CRV3LPBal = get3CRVLPBalance();
         convexDeposit(CRV3LPBal, true);
     }
 
-    function oneShotWithdrawAll() public {
+    function oneShotWithdrawAll() public onlyOwner {
         uint256 stakedBal = getStakedConvexLPBalance();
         convexUnstake(stakedBal);
         convexWithdraw(stakedBal);
@@ -215,7 +220,7 @@ contract CurveLending {
 
     // TODO take out profit and deposit into trasury
     // TODO swap CRV and CVX as part of this as well (proportionally) -> or some other strategy
-    function oneShotWithdraw(uint256 toWithdrawInWei) public {
+    function oneShotWithdraw(uint256 toWithdrawInWei) public onlyOwner {
         convexUnstake(toWithdrawInWei);
         convexWithdraw(toWithdrawInWei);
         withdrawAllLP(-1);
