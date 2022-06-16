@@ -82,23 +82,6 @@ contract('TestCurveSwapToWETH', (accounts) => {
         assert.notEqual(actualAccountBalWETH, 0, "There should exist WETH from CRV swap");
         assert.equal(actualContractBalCVX, initialContractBalCRV - absToSwap, `Only ${swapAmount.toString()} of CVX should have been swapped`);
     });
-
-    it.skip('swapsCRVToDAIV2ViaUniswap', async () => {
-        const absToSwap = 10;
-
-        const swapAmount = unnormalise(absToSwap, ERC20_DECIMAL);
-        const outputAmount = unnormalise(1, ERC20_DECIMAL);
-
-        const initialContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
-
-        await SWAP_CONTRACT.swapV2(CRV, DAI, swapAmount, outputAmount, accounts[0]);
-
-        const actualAccountBalDAI = normalise(await DAI_CONTRACT.balanceOf(accounts[0]), ERC20_DECIMAL);
-        const actualContractBalCRV = normalise(await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address), ERC20_DECIMAL);
-
-        assert.notEqual(actualAccountBalDAI, 0, "There should exist DAI from CRV swap");
-        assert.equal(actualContractBalCRV, initialContractBalCRV - absToSwap, `Only ${swapAmount.toString()} of CRV should have been swapped`);
-    });
 });
 
 contract('TestUniswapWETHToDai', async (accounts) => {
@@ -247,12 +230,12 @@ contract('TestOneShotSwapGovernance', async (accounts) => {
         const actualContractCRVBal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
         const actualContractWETHBal = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);;
         const actualContractDAIBal = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        const actualContract3CRVBal = await CRV3LP_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+        const actualAccount3CRVBal = await CRV3LP_CONTRACT.balanceOf(accounts[0]);
 
         assert.equal(actualContractCRVBal, 0, "There should not exist any CRV as this should all be swapped");
         assert.equal(actualContractWETHBal, 0, "There should not exist any WETH as this is intermediary asset in swap");
         assert.equal(actualContractDAIBal, 0, "There should not exist any DAI as this is intermediary asset in swap");
-        assert.notEqual(actualContract3CRVBal, 0, "There should exist some 3CRV from swap");
+        assert.notEqual(actualAccount3CRVBal, 0, "There should exist some 3CRV from swap");
     });
 
     it('swapsCVXFor3CRV', async () => {
@@ -263,12 +246,12 @@ contract('TestOneShotSwapGovernance', async (accounts) => {
         const actualContractCVXBal = await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address);
         const actualContractWETHBal = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);;
         const actualContractDAIBal = await DAI_CONTRACT.balanceOf(SWAP_CONTRACT.address);
-        const actualContract3CRVBal = await CRV3LP_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+        const actualAccount3CRVBal = await CRV3LP_CONTRACT.balanceOf(accounts[0]);
 
         assert.equal(actualContractCVXBal, 0, "There should not exist any CVX as this should all be swapped");
         assert.equal(actualContractWETHBal, 0, "There should not exist any WETH as this is intermediary asset in swap");
         assert.equal(actualContractDAIBal, 0, "There should not exist any DAI as this is intermediary asset in swap");
-        assert.notEqual(actualContract3CRVBal, 0, "There should exist some 3CRV from swap");
+        assert.notEqual(actualAccount3CRVBal, 0, "There should exist some 3CRV from swap");
     });
 });
 
