@@ -82,8 +82,6 @@ contract CurveConvexLP is Ownable, ReentrancyGuard {
         withdrawAllLP(-1);
     }
 
-    // TODO take out profit and deposit into trasury
-    // TODO swap CRV and CVX as part of this as well (proportionally) -> or some other strategy
     function oneShotWithdraw(uint256 toWithdrawInWei) public onlyOwner nonReentrant {
         convexUnstake(toWithdrawInWei);
         convexWithdraw(toWithdrawInWei);
