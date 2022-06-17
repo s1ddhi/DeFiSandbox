@@ -1,5 +1,5 @@
 const IERC20 = artifacts.require("IERC20");
-const UNISWAP_GOVERNANCE = artifacts.require('SwapGovernance');
+const UNISWAP_GOVERNANCE = artifacts.require('SwapGovernanceTest');
 
 const CRV_WHALE = '0x9b44473e223f8a3c047ad86f387b80402536b029';
 const CRV = '0xD533a949740bb3306d119CC777fa900bA034cd52';
@@ -252,6 +252,72 @@ contract('TestOneShotSwapGovernance', async (accounts) => {
         assert.equal(actualContractWETHBal, 0, "There should not exist any WETH as this is intermediary asset in swap");
         assert.equal(actualContractDAIBal, 0, "There should not exist any DAI as this is intermediary asset in swap");
         assert.notEqual(actualAccount3CRVBal, 0, "There should exist some 3CRV from swap");
+    });
+});
+
+contract('TestOneShotSwapGovernance', async (accounts) => {
+    beforeEach(async() => {
+        CRV_CONTRACT = await IERC20.at(CRV);
+        CVX_CONTRACT = await IERC20.at(CVX);
+        SWAP_CONTRACT = await UNISWAP_GOVERNANCE.new();
+        DAI_CONTRACT = await IERC20.at(DAI);
+        WETH_CONTRACT = await IERC20.at(WETH);
+        CRV3LP_CONTRACT = await IERC20.at(CRV3LP);
+
+        const etherAmount = 1
+
+        await web3.eth.sendTransaction({
+            from: accounts[0],
+            to: CRV_WHALE,
+            value: web3.utils.toWei(etherAmount.toString(), "ether")
+        });
+
+        await web3.eth.sendTransaction({
+            from: accounts[0],
+            to: CVX_WHALE,
+            value: web3.utils.toWei(etherAmount.toString(), "ether")
+        });
+
+        const erc20Amount = 10;
+
+        await sendERC20(CRV_CONTRACT, CRV_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
+        await sendERC20(CVX_CONTRACT, CVX_WHALE, SWAP_CONTRACT.address, unnormalise(erc20Amount, ERC20_DECIMAL));
+
+        const contractCRVBal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+        const contractCVXBal = await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+        const contract3CRVLPBal = await CRV3LP_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+
+        assert.notEqual(contractCRVBal, 0, '[Setup fault] There should exist CRV for contract to swap');
+        assert.notEqual(contractCVXBal, 0, '[Setup fault] There should exist CVX for contract to swap');
+        assert.equal(contract3CRVLPBal, 0, '[Setup fault] There should not exist any 3CRV LP tokens as no swaps has taken place');
+    });
+
+    it('swapsCRVForDAI', async () => {
+        const crvSwapAmount = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+
+        await SWAP_CONTRACT.swapGovernanceForDAI(0, crvSwapAmount, 0, 1);
+
+        const actualContractCRVBal = await CRV_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+        const actualContractWETHBal = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);;
+        const actualContractDAIBal = await DAI_CONTRACT.balanceOf(accounts[0]);
+
+        assert.equal(actualContractCRVBal, 0, "There should not exist any CRV as this should all be swapped");
+        assert.equal(actualContractWETHBal, 0, "There should not exist any WETH as this is intermediary asset in swap");
+        assert.notEqual(actualContractDAIBal, 0, "There should exist DAI from swap");
+    });
+
+    it('swapsCVXForDAI', async () => {
+        const cvxSwapAmount = await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+
+        await SWAP_CONTRACT.swapGovernanceForDAI(1, cvxSwapAmount, 0, 1);
+
+        const actualContractCVXBal = await CVX_CONTRACT.balanceOf(SWAP_CONTRACT.address);
+        const actualContractWETHBal = await WETH_CONTRACT.balanceOf(SWAP_CONTRACT.address);;
+        const actualContractDAIBal = await DAI_CONTRACT.balanceOf(accounts[0]);
+
+        assert.equal(actualContractCVXBal, 0, "There should not exist any CVX as this should all be swapped");
+        assert.equal(actualContractWETHBal, 0, "There should not exist any WETH as this is intermediary asset in swap");
+        assert.notEqual(actualContractDAIBal, 0, "There should exist DAI from swap");
     });
 });
 

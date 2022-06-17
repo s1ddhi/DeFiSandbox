@@ -65,6 +65,13 @@ contract SwapGovernance is ReentrancyGuard {
       CRV3LP.transfer(msg.sender, contractBal3CRVLP);
     }
 
+    function swapGovernanceForDAI(int128 tokenIndex, uint256 swapAmount, uint256 minwETH, uint256 minDAI) public nonReentrant {
+      uint256 wethReceived = curveSwapGovernanceToWETH(tokenIndex, swapAmount, minwETH);
+      swapV2(WETH_ADDRESS, DAI_ADDRESS, wethReceived, minDAI, address(this));
+      uint256 daiAmount = DAI.balanceOf(address(this));
+      DAI.transfer(msg.sender, daiAmount);
+    }
+
     // MAIN METHODS //
 
     // INTERNAL METHODS //

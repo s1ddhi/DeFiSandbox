@@ -18,7 +18,7 @@ interface ICurve3PoolLending {
    function add_liquidity(uint256[3] calldata amounts, uint256 min_mint_amount) external;
 }
 
-contract SwapGovernance is ReentrancyGuard {
+contract SwapGovernanceTest is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // Stablecoins
@@ -63,6 +63,13 @@ contract SwapGovernance is ReentrancyGuard {
       lend(daiAmount, 0, 0);
       uint256 contractBal3CRVLP = CRV3LP.balanceOf(address(this));
       CRV3LP.transfer(msg.sender, contractBal3CRVLP);
+    }
+
+    function swapGovernanceForDAI(int128 tokenIndex, uint256 swapAmount, uint256 minwETH, uint256 minDAI) public nonReentrant {
+      uint256 wethReceived = curveSwapGovernanceToWETH(tokenIndex, swapAmount, minwETH);
+      swapV2(WETH_ADDRESS, DAI_ADDRESS, wethReceived, minDAI, address(this));
+      uint256 daiAmount = DAI.balanceOf(address(this));
+      DAI.transfer(msg.sender, daiAmount);
     }
 
     // MAIN METHODS //
