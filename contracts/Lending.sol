@@ -92,17 +92,17 @@ contract CurveLending is Ownable, ReentrancyGuard {
         convexDeposit(CRV3LPBal, true);
     }
 
-    function oneShotWithdrawAll() public onlyOwner nonReentrant {
+    function oneShotWithdrawAll(int128 coinIndex) public onlyOwner nonReentrant {
         uint256 stakedBal = getStakedConvexLPBalance();
         convexUnstake(stakedBal);
         convexWithdraw(stakedBal);
-        withdrawAllLP(-1);
+        withdrawAllLP(coinIndex);
     }
 
-    function oneShotWithdraw(uint256 toWithdrawInWei) public onlyOwner nonReentrant {
+    function oneShotWithdraw(uint256 toWithdrawInWei, int128 coinIndex) public onlyOwner nonReentrant {
         convexUnstake(toWithdrawInWei);
         convexWithdraw(toWithdrawInWei);
-        withdrawAllLP(-1);
+        withdrawAllLP(coinIndex);
     }
 
     // MAIN METHODS //
@@ -232,6 +232,10 @@ contract CurveLending is Ownable, ReentrancyGuard {
 
     function convexWithdraw(uint256 amount) public onlyOwner {
         CONVEX_BOOSTER.withdraw(PID, amount);
+    }
+
+    function claimRewards() public {
+        CONVEX_3POOL_REWARDS.getReward();
     }
 
     // INTERNAL METHODS //
