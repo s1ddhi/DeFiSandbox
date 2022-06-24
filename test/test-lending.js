@@ -30,6 +30,8 @@ const erc20Amount = 1000000;
 
 const CRV3LP_ADDRESS = "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490";
 const CONVEX_3CRV_TOKEN_ADDRESS = "0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C";
+const CRV_ADDRESS = "0xD533a949740bb3306d119CC777fa900bA034cd52";
+const CVX_ADDRESS = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
 
 contract("TestCurveLendingSingleAsset", (accounts) => {
     beforeEach(async () => {
@@ -379,6 +381,8 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
         EXCHANGE_CONTRACT = await EXCHANGE.new();
         CRV3LP = await IERC20.at(CRV3LP_ADDRESS);
         CONVEX_3CRV = await IERC20.at(CONVEX_3CRV_TOKEN_ADDRESS);
+        CRV_CONTRACT = await IERC20.at(CRV_ADDRESS)
+        CVX_CONTRACT = await IERC20.at(CVX_ADDRESS)
 
         await setupAll(accounts[0], LENDING_CONTRACT.address, DAI_CONTRACT, DAI_WHALE, DAI_DECIMAL, USDC_CONTRACT, USDC_WHALE, USDC_DECIMAL, USDT_CONTRACT, USDT_WHALE, USDT_DECIMAL);
 
@@ -421,8 +425,6 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
         await advanceTime();
 
         await LENDING_CONTRACT.oneShotWithdrawAll(DAI_INDEX);
-
-        await debugDisplayAll(accounts[0]);
 
         const actual3CRVLPBalance = await CRV3LP.balanceOf(LENDING_CONTRACT.address);
         const actualConvexLPBalance = await CONVEX_3CRV.balanceOf(LENDING_CONTRACT.address);
@@ -476,8 +478,6 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
 
         await LENDING_CONTRACT.oneShotWithdraw(amountToWithdraw, DAI_INDEX);
 
-        await debugDisplayAll(accounts[0]);
-
         const actual3CRVLPBalance = await CRV3LP.balanceOf(LENDING_CONTRACT.address);
         const actualConvexLPBalance = await CONVEX_3CRV.balanceOf(LENDING_CONTRACT.address);
         const actualStakedConvexLPBalance = await LENDING_CONTRACT.getStakedConvexLPBalance();
@@ -510,6 +510,19 @@ contract("TestCurveOneShotWithdrawal", (accounts) => {
         const actualStablecoinTotal = contractBalDAI.add(contractBalUSDC).add(contractBalUSDT);
         const stablecoinDifference = actualStablecoinTotal.sub(initialStableCoinTotal);
         assert.isAbove(stablecoinDifference.toNumber(), 0,  "No interest was accrued from 3pool");
+    })
+
+    it("shouldGenerateCRVCVXInterest", async () => {
+        await poolActivitySimulation(accounts);
+
+        await advanceTime();
+
+        await LENDING_CONTRACT.oneShotWithdrawAll(-1);
+
+        const contractBalCRV = normalise(await CRV_CONTRACT.balanceOf(LENDING_CONTRACT.address), ERC20_DECIMAL);
+        const contractBalCVX = normalise(await CVX_CONTRACT.balanceOf(LENDING_CONTRACT.address), ERC20_DECIMAL);
+        assert.isAbove(contractBalCRV.toNumber(), 0,  "No CRV interest was accrued from 3pool");
+        assert.isAbove(contractBalCVX.toNumber(), 0,  "No CVX interest was accrued from 3pool");
     })
 });
 
@@ -631,8 +644,6 @@ const createPoolImbalance = async () => {
     const contractBalUSDT = await USDT_CONTRACT.balanceOf(IMBALANCER_CONTRACT.address);
 
     await IMBALANCER_CONTRACT.lend(0, 0, contractBalUSDT);
-
-    await poolDebugDisplayAll();
 }
 
 const poolActivitySimulation = async (accounts) => {

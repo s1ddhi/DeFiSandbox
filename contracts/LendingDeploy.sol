@@ -90,8 +90,6 @@ contract CurveConvexLP is Ownable, ReentrancyGuard {
 
     // MAIN METHODS //
 
-    // UTILITY METHODS - TODO re-run gas simulation + do for Swap + interest rate model script //
-
     function isConvexShutdown() public view returns(bool) {
         bool status = CONVEX_BOOSTER.isShutdown();
         return status;
